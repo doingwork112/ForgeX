@@ -9,160 +9,298 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 
 export default function AppDetailPage({ params }: { params: { id: string } }) {
   const app = apps.find((a) => a.id === params.id);
-
-  if (!app) {
-    notFound();
-  }
+  if (!app) notFound();
 
   const [activeScreenshot, setActiveScreenshot] = useState(0);
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [purchased, setPurchased] = useState(false);
+
+  const relatedApps = apps.filter((a) => a.id !== app.id && a.category === app.category).slice(0, 3);
+
+  function handleBuy() {
+    setShowBuyModal(false);
+    setPurchased(true);
+    setTimeout(() => setPurchased(false), 4000);
+  }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-foreground">
+    <div className="relative min-h-screen bg-[#0a0a0a] text-foreground">
+      {/* Background */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
+        <div className="absolute inset-0 opacity-[0.2]" style={{
+          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundSize: "28px 28px",
+        }} />
+      </div>
+
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Back link */}
+      {/* Success toast */}
+      {purchased && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#0a0a0a] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
+          <span className="text-[#1D9E75] text-xl">✓</span>
+          <div>
+            <p className="text-sm font-semibold text-white">Purchase complete!</p>
+            <p className="text-xs text-muted-foreground">Code delivery link sent to your email.</p>
+          </div>
+        </div>
+      )}
+
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        {/* Back */}
         <Link
           href="/marketplace"
-          className="mb-8 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-white"
         >
-          &larr; Back to Marketplace
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Marketplace
         </Link>
 
-        {/* Two-column layout */}
-        <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-5">
-          {/* Left column (60%) */}
+        {/* Two-column */}
+        <div className="mt-4 grid grid-cols-1 gap-10 lg:grid-cols-5">
+          {/* Left */}
           <div className="lg:col-span-3 space-y-8">
-            {/* Screenshot gallery */}
+            {/* Gallery */}
             <div className="space-y-3">
-              {/* Main screenshot */}
-              <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-card">
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-[#111] border border-white/[0.06]">
                 <Image
                   src={app.screenshots[activeScreenshot]}
-                  alt={`${app.name} screenshot ${activeScreenshot + 1}`}
+                  alt={`${app.name} screenshot`}
                   fill
                   className="object-cover"
                 />
               </div>
-
-              {/* Thumbnail row */}
               {app.screenshots.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
-                  {app.screenshots.map((screenshot, index) => (
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {app.screenshots.map((shot, i) => (
                     <button
-                      key={index}
-                      onClick={() => setActiveScreenshot(index)}
-                      className={`relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-card transition-all ${
-                        activeScreenshot === index
-                          ? "ring-2 ring-[#1D9E75] ring-offset-2 ring-offset-[#0a0a0a]"
-                          : "opacity-60 hover:opacity-100"
+                      key={i}
+                      onClick={() => setActiveScreenshot(i)}
+                      className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-[#111] border transition-all ${
+                        activeScreenshot === i
+                          ? "border-[#1D9E75] shadow-[0_0_12px_rgba(29,158,117,0.3)]"
+                          : "border-white/[0.06] opacity-50 hover:opacity-80"
                       }`}
                     >
-                      <Image
-                        src={screenshot}
-                        alt={`${app.name} thumbnail ${index + 1}`}
-                        fill
-                        className="object-cover"
-                      />
+                      <Image src={shot} alt="" fill className="object-cover" />
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* About this app */}
+            {/* About */}
             <div className="space-y-3">
               <h2 className="text-xl font-semibold">About this app</h2>
-              <p className="leading-relaxed text-muted-foreground">
-                {app.description}
-              </p>
+              <p className="leading-relaxed text-muted-foreground">{app.description}</p>
             </div>
 
             {/* Features */}
             <div className="space-y-3">
-              <h2 className="text-xl font-semibold">Features</h2>
-              <ul className="space-y-2">
-                {app.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="mt-0.5 text-[#1D9E75] font-bold">&#10003;</span>
-                    <span className="text-muted-foreground">{feature}</span>
+              <h2 className="text-xl font-semibold">What&apos;s included</h2>
+              <ul className="space-y-2.5">
+                {app.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1D9E75]/15">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2.5 2.5L8 3" stroke="#1D9E75" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                    <span className="text-sm text-muted-foreground leading-relaxed">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
 
-          {/* Right column (40%) */}
+          {/* Right — sticky card */}
           <div className="lg:col-span-2">
-            <Card className="sticky top-20 space-y-6 border-border/50 bg-card/50 p-6 backdrop-blur">
-              {/* App name & tagline */}
-              <div className="space-y-2">
+            <div className="sticky top-20 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 backdrop-blur space-y-5">
+              {/* Name */}
+              <div>
                 <h1 className="text-2xl font-bold">{app.name}</h1>
-                <p className="text-muted-foreground">{app.tagline}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{app.tagline}</p>
               </div>
 
-              {/* Tech stack badges */}
-              <div className="flex flex-wrap gap-2">
+              {/* Tech stack */}
+              <div className="flex flex-wrap gap-1.5">
                 {app.techStack.map((tech) => (
-                  <Badge key={tech} variant="secondary">
-                    {tech}
-                  </Badge>
+                  <Badge key={tech} variant="secondary" className="text-xs">{tech}</Badge>
                 ))}
               </div>
 
-              {/* Category badge */}
-              <div>
-                <Badge className="bg-[#1D9E75] text-white hover:bg-[#1D9E75]/90">
-                  {app.category}
-                </Badge>
-              </div>
+              {/* Category */}
+              <Badge className="bg-[#1D9E75]/15 text-[#1D9E75] border-[#1D9E75]/30 hover:bg-[#1D9E75]/20">
+                {app.category}
+              </Badge>
 
               {/* Price */}
-              <div className="text-3xl font-bold text-[#1D9E75]">
-                ${app.price}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Price</p>
+                <p
+                  className="text-4xl font-bold text-[#1D9E75]"
+                  style={{ textShadow: "0 0 30px rgba(29,158,117,0.3)" }}
+                >
+                  ${app.price}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">One-time · Full source code</p>
               </div>
 
               {/* Buttons */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-white/10 hover:border-white/20 hover:bg-white/5"
                   onClick={() => window.open(app.demoUrl, "_blank")}
                 >
-                  Open Demo
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="mr-2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Live Demo
                 </Button>
-                <Button className="w-full bg-[#1D9E75] font-bold text-white hover:bg-[#1D9E75]/90">
-                  Buy Now
+                <Button
+                  className="w-full bg-[#1D9E75] font-semibold text-white hover:bg-[#1D9E75]/90 shadow-[0_0_20px_rgba(29,158,117,0.3)]"
+                  onClick={() => setShowBuyModal(true)}
+                >
+                  Buy Now — ${app.price}
                 </Button>
               </div>
 
-              {/* Seller info */}
-              <div className="rounded-lg border border-border/50 p-4">
+              {/* What you get */}
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2">
+                {["Full source code", "Lifetime access", "Free updates for 6 months", "MIT license"].map((item) => (
+                  <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="text-[#1D9E75]">✓</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              {/* Seller */}
+              <div className="rounded-xl border border-white/[0.06] p-4">
+                <p className="text-xs text-muted-foreground mb-3">Sold by</p>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-medium">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1D9E75]/20 text-sm font-semibold text-[#1D9E75]">
                     {app.seller.avatar}
                   </div>
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium">{app.seller.name}</p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="text-yellow-500">&#9733;</span>
+                  <div>
+                    <p className="text-sm font-semibold">{app.seller.name}</p>
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                      <span className="text-yellow-400">★</span>
                       <span>{app.seller.rating}</span>
-                      <span>&middot;</span>
-                      <span>{app.seller.sold} apps sold</span>
+                      <span className="opacity-40">·</span>
+                      <span>{app.seller.sold} sold</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
+
+        {/* Related Apps */}
+        {relatedApps.length > 0 && (
+          <div className="mt-20">
+            <h2 className="text-xl font-semibold mb-6">More in {app.category}</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {relatedApps.map((related) => (
+                <Link key={related.id} href={`/marketplace/${related.id}`}>
+                  <div className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all hover:border-[#1D9E75]/40 hover:shadow-[0_0_24px_rgba(29,158,117,0.1)] hover:-translate-y-0.5">
+                    <div className="relative aspect-video bg-[#111]">
+                      <Image src="/placeholder-app.svg" alt={related.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="p-4">
+                      <p className="font-semibold text-sm">{related.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{related.tagline}</p>
+                      <p className="mt-2 text-sm font-bold text-[#1D9E75]">${related.price}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />
+
+      {/* Buy Modal */}
+      {showBuyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowBuyModal(false)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/[0.1] bg-[#0f0f0f] p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+            {/* Close */}
+            <button
+              onClick={() => setShowBuyModal(false)}
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+            >
+              ✕
+            </button>
+
+            <div className="mb-6">
+              <h2 className="text-xl font-bold">Complete Purchase</h2>
+              <p className="text-sm text-muted-foreground mt-1">You&apos;re buying {app.name}</p>
+            </div>
+
+            {/* Summary */}
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3 mb-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">App</span>
+                <span className="font-medium">{app.name}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">License</span>
+                <span className="font-medium">MIT · Full source</span>
+              </div>
+              <div className="border-t border-white/[0.06] pt-3 flex justify-between">
+                <span className="font-semibold">Total</span>
+                <span className="text-xl font-bold text-[#1D9E75]">${app.price}</span>
+              </div>
+            </div>
+
+            {/* Payment placeholder */}
+            <div className="mb-6 space-y-3">
+              <input
+                type="text"
+                placeholder="Card number"
+                className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="MM / YY"
+                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                />
+                <input
+                  type="text"
+                  placeholder="CVC"
+                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+
+            <Button
+              className="w-full bg-[#1D9E75] font-semibold text-white hover:bg-[#1D9E75]/90 shadow-[0_0_24px_rgba(29,158,117,0.35)] py-3 text-base"
+              onClick={handleBuy}
+            >
+              Pay ${app.price}
+            </Button>
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Secured by Stripe · Money-back guarantee
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
