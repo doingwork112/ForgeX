@@ -1,101 +1,104 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const router = useRouter();
+  const [phase, setPhase] = useState<"idle" | "pop" | "settle" | "done">("idle");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    setPhase("pop");
+    setTimeout(() => setPhase("settle"), 600);
+    setTimeout(() => setPhase("done"), 1400);
+  }, []);
+
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+      {/* ─── Metallic background ─── */}
+      <div className="fixed inset-0 bg-[#0a0a0a]" />
+
+      <div className="fixed inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)`,
+          backgroundSize: "4px 100%",
+        }}
+      />
+
+      <div
+        className="fixed inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse 60% 40% at 30% 20%, rgba(255,255,255,0.04) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 30% at 70% 75%, rgba(255,255,255,0.02) 0%, transparent 60%),
+            linear-gradient(135deg, rgba(255,255,255,0.015) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.01) 100%)
+          `,
+        }}
+      />
+
+      <div
+        className="fixed inset-0"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%)",
+        }}
+      />
+
+      {/* ─── Content ─── */}
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Logo */}
+        <div
+          className={`
+            ${phase === "idle" ? "opacity-0 scale-0" : ""}
+            ${phase === "pop" ? "animate-logo-pop" : ""}
+            ${phase === "settle" ? "animate-logo-settle" : ""}
+            ${phase === "done" ? "opacity-100 scale-[0.85] -translate-y-8" : ""}
+          `}
+          style={{
+            filter: "drop-shadow(0 0 30px rgba(255,20,147,0.3)) drop-shadow(0 4px 8px rgba(0,0,0,0.8))",
+          }}
+        >
+          <Image
+            src="/forgex-logo-v2.png"
+            alt="ForgeX"
+            width={500}
+            height={350}
+            priority
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* Auth buttons */}
+        <div
+          className={`
+            flex flex-col items-center gap-4 mt-6
+            ${phase === "done" ? "animate-buttons-bounce" : "opacity-0 scale-0 pointer-events-none"}
+          `}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <div className="flex gap-4">
+            <Button
+              size="lg"
+              className="px-8 bg-white text-black font-bold hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+            >
+              Sign up
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-8 border-white/20 text-white hover:bg-white/10 font-bold"
+            >
+              Log in
+            </Button>
+          </div>
+          <button
+            className="text-sm text-white/40 hover:text-white/70 transition-colors mt-2"
+            onClick={(e) => { e.stopPropagation(); router.push("/home"); }}
+          >
+            Visit as guest
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 }
