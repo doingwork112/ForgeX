@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const links = [
@@ -16,6 +17,17 @@ export function Navbar() {
     { href: "/sell", label: "Sell" },
     { href: "/community", label: "Community" },
   ];
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setAvatarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#f8f9fa]/80 backdrop-blur-xl">
@@ -49,10 +61,11 @@ export function Navbar() {
         </div>
 
         {/* Right */}
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard">
+        <div className="flex items-center gap-2">
+          {/* Dashboard icon */}
+          <Link href="/dashboard" className="hidden md:block">
             <button
-              className="hidden md:flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors"
               title="Dashboard"
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -60,11 +73,55 @@ export function Navbar() {
               </svg>
             </button>
           </Link>
-          <Link href="/profile" className="hidden md:block">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1D9E75]/15 text-xs font-bold text-[#1D9E75] hover:ring-2 hover:ring-[#1D9E75]/30 transition-all cursor-pointer">
+
+          {/* Avatar + dropdown */}
+          <div ref={avatarRef} className="relative hidden md:block">
+            <button
+              onClick={() => setAvatarOpen((v) => !v)}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1D9E75]/15 text-xs font-bold text-[#1D9E75] hover:ring-2 hover:ring-[#1D9E75]/30 transition-all"
+            >
               AC
-            </div>
-          </Link>
+            </button>
+
+            {avatarOpen && (
+              <div className="absolute right-0 top-10 z-50 w-52 rounded-2xl border border-black/[0.08] bg-white shadow-xl overflow-hidden">
+                {/* User info */}
+                <div className="px-4 py-3 border-b border-black/[0.06]">
+                  <p className="text-sm font-semibold text-[#111]">Alex Chen</p>
+                  <p className="text-xs text-muted-foreground">@alexchen</p>
+                </div>
+
+                {/* Menu items */}
+                <div className="py-1.5">
+                  {[
+                    { href: "/profile", icon: "👤", label: "Profile" },
+                    { href: "/u/alexchen", icon: "🌐", label: "Public page" },
+                    { href: "/dashboard", icon: "📊", label: "Dashboard" },
+                    { href: "/dashboard/orders", icon: "📦", label: "Orders" },
+                    { href: "/sell/new", icon: "➕", label: "New listing" },
+                  ].map(({ href, icon, label }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setAvatarOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-[#333] hover:bg-black/[0.04] transition-colors"
+                    >
+                      <span className="text-base">{icon}</span>
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="border-t border-black/[0.06] py-1.5">
+                  <button className="flex w-full items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-black/[0.04] transition-colors">
+                    <span className="text-base">🚪</span>
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Mobile hamburger */}
           <button
             className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors md:hidden"

@@ -14,27 +14,6 @@ const stats = [
   { value: "$500k+", label: "Paid Out" },
 ];
 
-const steps = [
-  {
-    number: "01",
-    title: "Post a bounty",
-    description: "Describe the app you need and set your budget. No tech knowledge required.",
-    icon: "📋",
-  },
-  {
-    number: "02",
-    title: "Builders deliver",
-    description: "Developers build your app and submit a live demo for you to try.",
-    icon: "⚡",
-  },
-  {
-    number: "03",
-    title: "Buy or pass",
-    description: "Love it? Pay and get the full codebase. Pass? It hits the public marketplace.",
-    icon: "🎯",
-  },
-];
-
 const featuredApps = apps.slice(0, 6);
 
 export default function HomePage() {
@@ -77,9 +56,8 @@ export default function HomePage() {
           </span>
         </h1>
 
-        <p className="relative mt-6 max-w-lg text-lg text-muted-foreground leading-relaxed">
-          Browse finished apps built by AI-powered developers.
-          Buy the code instantly, or post a bounty and get exactly what you need.
+        <p className="relative mt-5 max-w-md text-base text-muted-foreground leading-relaxed">
+          Buy finished apps instantly. Or post a bounty — builders compete, you pick the winner.
         </p>
 
         <div className="relative mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -95,17 +73,11 @@ export default function HomePage() {
             <Button
               variant="outline"
               size="lg"
-              className="px-8 border-white/15 text-white hover:bg-black/[0.04] hover:border-white/30"
+              className="px-8 border-black/[0.12] text-[#333] hover:bg-black/[0.04] hover:border-black/[0.2]"
             >
               Post a Bounty
             </Button>
           </Link>
-        </div>
-
-        {/* Scroll hint */}
-        <div className="mt-16 flex flex-col items-center gap-2 text-xs text-muted-foreground/50">
-          <span>Scroll to explore</span>
-          <div className="h-8 w-px bg-gradient-to-b from-white/10 to-transparent" />
         </div>
       </section>
 
@@ -116,35 +88,6 @@ export default function HomePage() {
             <div key={stat.label} className="flex flex-col items-center gap-1 text-center">
               <span className="text-2xl font-bold text-[#111] md:text-3xl">{stat.value}</span>
               <span className="text-xs text-muted-foreground">{stat.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── How it works ─── */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="mb-12 text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-[#1D9E75] mb-3">How it works</p>
-          <h2 className="text-3xl font-bold tracking-tight">Three steps to launch</h2>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {steps.map((step, i) => (
-            <div
-              key={step.number}
-              className="group relative rounded-2xl border border-black/[0.06] bg-white p-8 transition-all hover:border-[#1D9E75]/30 hover:bg-[#1D9E75]/[0.03]"
-            >
-              {/* Connector line */}
-              {i < steps.length - 1 && (
-                <div className="absolute top-1/2 -right-3 hidden h-px w-6 bg-gradient-to-r from-white/10 to-transparent md:block" />
-              )}
-              <div className="mb-4 text-2xl">{step.icon}</div>
-              <span className="font-mono text-xs font-semibold text-[#1D9E75] tracking-wider">
-                {step.number}
-              </span>
-              <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {step.description}
-              </p>
             </div>
           ))}
         </div>
@@ -182,7 +125,7 @@ export default function HomePage() {
                 {/* Body */}
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-semibold text-white leading-tight">{app.name}</h3>
+                    <h3 className="font-semibold text-[#111] leading-tight">{app.name}</h3>
                     <span className="shrink-0 text-base font-bold text-[#1D9E75]">${app.price}</span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-1">{app.tagline}</p>

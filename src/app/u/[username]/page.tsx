@@ -3,11 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { userProfiles, forgePosts, apps } from "@/lib/mock-data";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { Badge } from "@/components/ui/badge";
 
 const TAG_COLORS: Record<string, string> = {
   "#buildinpublic": "bg-blue-100 text-blue-700 border-blue-200",

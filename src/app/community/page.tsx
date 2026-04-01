@@ -5,7 +5,6 @@ import Link from "next/link";
 import { forgePosts, type ForgePost } from "@/lib/mock-data";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const TAG_COLORS: Record<string, string> = {

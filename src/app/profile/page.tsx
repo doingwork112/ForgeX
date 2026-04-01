@@ -5,7 +5,6 @@ import Link from "next/link";
 import { apps, mockOrders, mockPurchases, bounties } from "@/lib/mock-data";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const myApps = apps.filter((a) => ["1"].includes(a.id));
