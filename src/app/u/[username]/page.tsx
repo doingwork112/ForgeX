@@ -73,7 +73,7 @@ export default function UserProfilePage({ params }: { params: { username: string
   const [followerCount, setFollowerCount] = useState(148);
   const [newComment, setNewComment] = useState("");
   const [reviews, setReviews] = useState(
-    buyerReviews.filter((r) => user.appIds.some((id) => {
+    buyerReviews.filter(() => user.appIds.some((id) => {
       const app = apps.find((a) => a.id === id);
       return app?.seller.name === user.name;
     }))
