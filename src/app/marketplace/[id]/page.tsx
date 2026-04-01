@@ -17,6 +17,8 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
   const [activeScreenshot, setActiveScreenshot] = useState(0);
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [purchased, setPurchased] = useState(false);
+  const [activeTab, setActiveTab] = useState<"screenshots" | "preview">("screenshots");
+  const [iframeError, setIframeError] = useState(false);
 
   const relatedApps = apps.filter((a) => a.id !== app.id && a.category === app.category).slice(0, 3);
 
@@ -66,31 +68,108 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
         <div className="mt-4 grid grid-cols-1 gap-10 lg:grid-cols-5">
           {/* Left */}
           <div className="lg:col-span-3 space-y-8">
-            {/* Gallery */}
+            {/* Gallery / Live Preview tabs */}
             <div className="space-y-3">
-              <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-gray-100 border border-black/[0.06]">
-                <Image
-                  src={app.screenshots[activeScreenshot]}
-                  alt={`${app.name} screenshot`}
-                  fill
-                  className="object-cover"
-                />
+              {/* Tab switcher */}
+              <div className="flex gap-1 rounded-xl border border-black/[0.06] bg-white p-1 w-fit">
+                <button
+                  onClick={() => setActiveTab("screenshots")}
+                  className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-colors ${
+                    activeTab === "screenshots"
+                      ? "bg-[#1D9E75] text-white shadow"
+                      : "text-muted-foreground hover:text-[#111]"
+                  }`}
+                >
+                  Screenshots
+                </button>
+                <button
+                  onClick={() => { setActiveTab("preview"); setIframeError(false); }}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-medium transition-colors ${
+                    activeTab === "preview"
+                      ? "bg-[#1D9E75] text-white shadow"
+                      : "text-muted-foreground hover:text-[#111]"
+                  }`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                  Live Preview
+                </button>
               </div>
-              {app.screenshots.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {app.screenshots.map((shot, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveScreenshot(i)}
-                      className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 border transition-all ${
-                        activeScreenshot === i
-                          ? "border-[#1D9E75] shadow-[0_0_12px_rgba(29,158,117,0.3)]"
-                          : "border-black/[0.06] opacity-50 hover:opacity-80"
-                      }`}
-                    >
-                      <Image src={shot} alt="" fill className="object-cover" />
-                    </button>
-                  ))}
+
+              {activeTab === "screenshots" && (
+                <>
+                  <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-gray-100 border border-black/[0.06]">
+                    <Image
+                      src={app.screenshots[activeScreenshot]}
+                      alt={`${app.name} screenshot`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  {app.screenshots.length > 1 && (
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {app.screenshots.map((shot, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveScreenshot(i)}
+                          className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 border transition-all ${
+                            activeScreenshot === i
+                              ? "border-[#1D9E75] shadow-[0_0_12px_rgba(29,158,117,0.3)]"
+                              : "border-black/[0.06] opacity-50 hover:opacity-80"
+                          }`}
+                        >
+                          <Image src={shot} alt="" fill className="object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeTab === "preview" && (
+                <div className="relative w-full overflow-hidden rounded-2xl border border-black/[0.06] bg-gray-50">
+                  {/* Browser chrome */}
+                  <div className="flex items-center gap-2 border-b border-black/[0.06] bg-white px-4 py-2.5">
+                    <div className="flex gap-1.5">
+                      <div className="h-3 w-3 rounded-full bg-red-400" />
+                      <div className="h-3 w-3 rounded-full bg-yellow-400" />
+                      <div className="h-3 w-3 rounded-full bg-green-400" />
+                    </div>
+                    <div className="flex-1 rounded-md bg-[#f8f9fa] border border-black/[0.06] px-3 py-1 text-xs text-muted-foreground truncate">
+                      {app.demoUrl}
+                    </div>
+                    <a href={app.demoUrl} target="_blank" rel="noopener noreferrer"
+                      className="text-xs text-muted-foreground hover:text-[#111] transition-colors flex items-center gap-1">
+                      <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      Open
+                    </a>
+                  </div>
+                  {iframeError ? (
+                    <div className="flex h-[480px] flex-col items-center justify-center gap-4 text-center px-8">
+                      <span className="text-4xl">🔒</span>
+                      <p className="text-sm font-medium text-[#111]">Preview blocked by the demo site</p>
+                      <p className="text-xs text-muted-foreground max-w-xs">
+                        This demo doesn&apos;t allow embedding. Open it in a new tab to try it out.
+                      </p>
+                      <a
+                        href={app.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-xl bg-[#1D9E75] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1D9E75]/90 transition-colors"
+                      >
+                        Open demo →
+                      </a>
+                    </div>
+                  ) : (
+                    <iframe
+                      src={app.demoUrl}
+                      className="h-[480px] w-full"
+                      title={`${app.name} live demo`}
+                      onError={() => setIframeError(true)}
+                      sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                    />
+                  )}
                 </div>
               )}
             </div>

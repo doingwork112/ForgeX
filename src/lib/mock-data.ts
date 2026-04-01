@@ -1,3 +1,62 @@
+export interface BuyerReview {
+  id: string;
+  authorName: string;
+  authorAvatar: string;
+  authorUsername: string;
+  rating: number;
+  content: string;
+  appName: string;
+  createdAt: string;
+  verified: boolean;
+}
+
+export const buyerReviews: BuyerReview[] = [
+  {
+    id: "rev-1",
+    authorName: "James Park",
+    authorAvatar: "JP",
+    authorUsername: "jamespark",
+    rating: 5,
+    content: "InvoiceFlow is exactly what I needed. Clean code, great documentation. Had it deployed and customized in under a day. Alex was also super responsive to a couple questions I had.",
+    appName: "InvoiceFlow",
+    createdAt: "2026-03-28T10:30:00Z",
+    verified: true,
+  },
+  {
+    id: "rev-2",
+    authorName: "Lucy Brown",
+    authorAvatar: "LB",
+    authorUsername: "lucybrown",
+    rating: 5,
+    content: "Saved me weeks of work. The Stripe integration alone was worth the price. Would buy again from this seller without hesitation.",
+    appName: "InvoiceFlow",
+    createdAt: "2026-03-20T16:45:00Z",
+    verified: true,
+  },
+  {
+    id: "rev-3",
+    authorName: "Kevin Lee",
+    authorAvatar: "KL",
+    authorUsername: "kevinlee",
+    rating: 4,
+    content: "Really solid codebase. MIT license so I could customize freely. Only minor thing — would love a dark mode option out of the box. Overall great buy.",
+    appName: "InvoiceFlow",
+    createdAt: "2026-03-15T11:00:00Z",
+    verified: true,
+  },
+  {
+    id: "rev-4",
+    authorName: "Sophia Martinez",
+    authorAvatar: "SM",
+    authorUsername: "sophiam",
+    rating: 5,
+    content: "Delivery was fast, code quality is professional level. This is what ForgeX is all about — you can actually trust the sellers here.",
+    appName: "InvoiceFlow",
+    createdAt: "2026-03-31T09:00:00Z",
+    verified: false,
+  },
+];
+
 export interface App {
   id: string;
   name: string;
