@@ -261,6 +261,165 @@ export const apps: App[] = [
   },
 ];
 
+export interface Seller {
+  id: string;
+  name: string;
+  avatar: string;
+  bio: string;
+  rating: number;
+  totalSold: number;
+  totalRevenue: number;
+  joinedAt: string;
+  appIds: string[];
+}
+
+export interface Order {
+  id: string;
+  appId: string;
+  appName: string;
+  appPrice: number;
+  buyerName: string;
+  buyerEmail: string;
+  buyerAvatar: string;
+  platformFee: number;
+  sellerEarnings: number;
+  status: "pending_delivery" | "delivered" | "complete";
+  createdAt: string;
+  deliveryUrl?: string;
+}
+
+export const sellers: Seller[] = [
+  {
+    id: "alex-chen",
+    name: "Alex Chen",
+    avatar: "AC",
+    bio: "Full-stack developer specializing in SaaS products. 5+ years building production apps with Next.js and Supabase.",
+    rating: 4.9,
+    totalSold: 23,
+    totalRevenue: 11477,
+    joinedAt: "2025-06-01",
+    appIds: ["1"],
+  },
+  {
+    id: "sarah-kim",
+    name: "Sarah Kim",
+    avatar: "SK",
+    bio: "E-commerce specialist. Built 30+ Shopify alternatives and headless commerce solutions for clients worldwide.",
+    rating: 4.7,
+    totalSold: 31,
+    totalRevenue: 13919,
+    joinedAt: "2025-04-15",
+    appIds: ["4"],
+  },
+  {
+    id: "dev-studio",
+    name: "Dev Studio",
+    avatar: "DS",
+    bio: "Boutique dev agency. We build developer tools and AI-powered SaaS apps. All code is tested, documented, and production-ready.",
+    rating: 4.9,
+    totalSold: 42,
+    totalRevenue: 29358,
+    joinedAt: "2025-01-10",
+    appIds: ["5"],
+  },
+  {
+    id: "nina-patel",
+    name: "Nina Patel",
+    avatar: "NP",
+    bio: "Product engineer with a focus on real-time communication apps. Previously at Intercom.",
+    rating: 4.7,
+    totalSold: 27,
+    totalRevenue: 10233,
+    joinedAt: "2025-07-20",
+    appIds: ["8"],
+  },
+];
+
+export const mockOrders: Order[] = [
+  {
+    id: "ord-001",
+    appId: "1",
+    appName: "InvoiceFlow",
+    appPrice: 499,
+    buyerName: "James Park",
+    buyerEmail: "james.park@example.com",
+    buyerAvatar: "JP",
+    platformFee: 74.85,
+    sellerEarnings: 424.15,
+    status: "complete",
+    createdAt: "2026-03-28T10:30:00Z",
+    deliveryUrl: "https://github.com/alexchen/invoiceflow-delivery",
+  },
+  {
+    id: "ord-002",
+    appId: "1",
+    appName: "InvoiceFlow",
+    appPrice: 499,
+    buyerName: "Rachel Green",
+    buyerEmail: "rachel.g@example.com",
+    buyerAvatar: "RG",
+    platformFee: 74.85,
+    sellerEarnings: 424.15,
+    status: "delivered",
+    createdAt: "2026-03-26T14:20:00Z",
+    deliveryUrl: "https://github.com/alexchen/invoiceflow-delivery",
+  },
+  {
+    id: "ord-003",
+    appId: "1",
+    appName: "InvoiceFlow",
+    appPrice: 499,
+    buyerName: "Tom Wilson",
+    buyerEmail: "tom.w@startupco.io",
+    buyerAvatar: "TW",
+    platformFee: 74.85,
+    sellerEarnings: 424.15,
+    status: "pending_delivery",
+    createdAt: "2026-03-30T08:15:00Z",
+  },
+  {
+    id: "ord-004",
+    appId: "1",
+    appName: "InvoiceFlow",
+    appPrice: 499,
+    buyerName: "Lucy Brown",
+    buyerEmail: "lucy@freelancer.me",
+    buyerAvatar: "LB",
+    platformFee: 74.85,
+    sellerEarnings: 424.15,
+    status: "complete",
+    createdAt: "2026-03-20T16:45:00Z",
+    deliveryUrl: "https://github.com/alexchen/invoiceflow-delivery",
+  },
+  {
+    id: "ord-005",
+    appId: "1",
+    appName: "InvoiceFlow",
+    appPrice: 499,
+    buyerName: "Kevin Lee",
+    buyerEmail: "kevin@techcorp.dev",
+    buyerAvatar: "KL",
+    platformFee: 74.85,
+    sellerEarnings: 424.15,
+    status: "complete",
+    createdAt: "2026-03-15T11:00:00Z",
+    deliveryUrl: "https://github.com/alexchen/invoiceflow-delivery",
+  },
+  {
+    id: "ord-006",
+    appId: "1",
+    appName: "InvoiceFlow",
+    appPrice: 499,
+    buyerName: "Sophia Martinez",
+    buyerEmail: "s.martinez@agency.co",
+    buyerAvatar: "SM",
+    platformFee: 74.85,
+    sellerEarnings: 424.15,
+    status: "pending_delivery",
+    createdAt: "2026-03-31T09:00:00Z",
+  },
+];
+
 export const bounties: Bounty[] = [
   {
     id: "1",

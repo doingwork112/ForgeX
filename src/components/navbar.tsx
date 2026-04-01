@@ -13,6 +13,7 @@ export function Navbar() {
   const links = [
     { href: "/marketplace", label: "Marketplace" },
     { href: "/hunters", label: "Hunters" },
+    { href: "/sell", label: "Sell" },
   ];
 
   return (
@@ -48,6 +49,16 @@ export function Navbar() {
 
         {/* Right */}
         <div className="flex items-center gap-3">
+          <Link href="/dashboard">
+            <button
+              className="hidden md:flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
+              title="Dashboard"
+            >
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+          </Link>
           <Button
             size="sm"
             className="hidden bg-accent text-white hover:bg-accent/90 md:inline-flex"
@@ -91,6 +102,17 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileOpen(false)}
+              className={`rounded-md px-3 py-2 text-sm transition-colors ${
+                pathname.startsWith("/dashboard")
+                  ? "text-white bg-white/8"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Dashboard
+            </Link>
             <div className="mt-3 pt-3 border-t border-white/[0.06]">
               <Button size="sm" className="w-full bg-accent text-white hover:bg-accent/90">
                 Sign in
