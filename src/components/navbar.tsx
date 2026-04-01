@@ -12,10 +12,10 @@ export function Navbar() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/marketplace", label: "Marketplace" },
-    { href: "/hunters", label: "Hunters" },
-    { href: "/sell", label: "Sell" },
-    { href: "/community", label: "Community" },
+    { href: "/marketplace", label: "软件超市" },
+    { href: "/hunters", label: "我要定制" },
+    { href: "/dashboard", label: "我的产品" },
+    { href: "/community", label: "社区" },
   ];
 
   // Close dropdown on outside click
@@ -160,17 +160,6 @@ export function Navbar() {
               </Link>
             ))}
             <Link
-              href="/dashboard"
-              onClick={() => setMobileOpen(false)}
-              className={`rounded-md px-3 py-2 text-sm transition-colors ${
-                pathname.startsWith("/dashboard")
-                  ? "text-[#111] bg-black/[0.05] font-medium"
-                  : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
               href="/profile"
               onClick={() => setMobileOpen(false)}
               className={`rounded-md px-3 py-2 text-sm transition-colors ${
@@ -179,7 +168,7 @@ export function Navbar() {
                   : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
               }`}
             >
-              Profile
+              我的主页
             </Link>
           </div>
         </div>

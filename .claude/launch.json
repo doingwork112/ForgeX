@@ -3,11 +3,11 @@
   "configurations": [
     {
       "name": "forgex-dev",
-      "runtimeExecutable": "/bin/sh",
-      "runtimeArgs": ["-c", "/usr/local/bin/node node_modules/next/dist/bin/next dev -p 3099"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
       "cwd": "/Users/boyudeng/Desktop/Trade/forgex",
-      "port": 3099,
-      "autoPort": false
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }

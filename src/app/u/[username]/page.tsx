@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { userProfiles, forgePosts, apps, buyerReviews } from "@/lib/mock-data";
@@ -23,12 +23,21 @@ function timeAgo(dateStr: string) {
 }
 
 const GRADIENT_PRESETS = [
-  "from-[#1D9E75] to-[#0d6e52]",
-  "from-purple-500 to-pink-500",
-  "from-blue-500 to-cyan-400",
-  "from-orange-400 to-rose-500",
-  "from-yellow-400 to-orange-500",
-  "from-indigo-500 to-purple-600",
+  { id: "g1",  class: "from-[#1D9E75] to-[#0d6e52]",     hex: "#1D9E75" },
+  { id: "g2",  class: "from-purple-500 to-pink-500",       hex: "#a855f7" },
+  { id: "g3",  class: "from-blue-500 to-cyan-400",         hex: "#3b82f6" },
+  { id: "g4",  class: "from-orange-400 to-rose-500",       hex: "#fb923c" },
+  { id: "g5",  class: "from-yellow-400 to-orange-500",     hex: "#facc15" },
+  { id: "g6",  class: "from-indigo-500 to-purple-600",     hex: "#6366f1" },
+  { id: "g7",  class: "from-red-500 to-pink-600",          hex: "#ef4444" },
+  { id: "g8",  class: "from-teal-400 to-blue-500",         hex: "#2dd4bf" },
+  { id: "g9",  class: "from-pink-400 to-rose-400",         hex: "#f472b6" },
+  { id: "g10", class: "from-green-400 to-teal-500",        hex: "#4ade80" },
+  { id: "g11", class: "from-slate-700 to-slate-900",       hex: "#334155" },
+  { id: "g12", class: "from-amber-400 to-yellow-300",      hex: "#fbbf24" },
+  { id: "g13", class: "from-violet-500 to-indigo-600",     hex: "#8b5cf6" },
+  { id: "g14", class: "from-sky-400 to-blue-600",          hex: "#38bdf8" },
+  { id: "g15", class: "from-fuchsia-500 to-purple-600",    hex: "#d946ef" },
 ];
 
 function StarRating({ rating }: { rating: number }) {
@@ -66,9 +75,29 @@ export default function UserProfilePage({ params }: { params: { username: string
   const user = profile ?? genericProfile;
   const isOwner = user.username === "alexchen";
 
-  const [gradient, setGradient] = useState(user.bannerGradient);
+  const [gradient, setGradient] = useState(GRADIENT_PRESETS.find(g => g.class === user.bannerGradient)?.class ?? GRADIENT_PRESETS[0].class);
+  const [bannerImage, setBannerImage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [showGradientPicker, setShowGradientPicker] = useState(false);
   const [activeTab, setActiveTab] = useState<"feed" | "apps" | "reviews">("feed");
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { setBannerImage(reader.result as string); setShowGradientPicker(false); };
+    reader.readAsDataURL(file);
+  }
+
+  function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatarImage(reader.result as string);
+    reader.readAsDataURL(file);
+  }
   const [following, setFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(148);
   const [newComment, setNewComment] = useState("");
@@ -113,9 +142,17 @@ export default function UserProfilePage({ params }: { params: { username: string
       <Navbar />
 
       <main>
+        {/* Hidden file inputs */}
+        <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
+        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+
         {/* Banner */}
         <div className="relative">
-          <div className={`h-48 w-full bg-gradient-to-r ${gradient}`} />
+          {bannerImage ? (
+            <div className="h-48 w-full bg-cover bg-center" style={{ backgroundImage: `url(${bannerImage})` }} />
+          ) : (
+            <div className={`h-48 w-full bg-gradient-to-r ${gradient}`} />
+          )}
           {isOwner && (
             <div className="absolute right-4 top-4">
               <button
@@ -125,17 +162,33 @@ export default function UserProfilePage({ params }: { params: { username: string
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-                Edit banner
+                编辑背景
               </button>
               {showGradientPicker && (
-                <div className="absolute right-0 top-10 z-20 rounded-xl border border-black/[0.08] bg-white p-3 shadow-xl flex gap-2">
-                  {GRADIENT_PRESETS.map((g) => (
+                <div className="absolute right-0 top-10 z-20 w-72 rounded-2xl border border-black/[0.08] bg-white p-4 shadow-xl">
+                  <p className="text-xs font-semibold text-muted-foreground mb-3">选择渐变色</p>
+                  <div className="grid grid-cols-5 gap-2 mb-4">
+                    {GRADIENT_PRESETS.map((g) => (
+                      <button
+                        key={g.id}
+                        onClick={() => { setGradient(g.class); setBannerImage(null); setShowGradientPicker(false); }}
+                        title={g.class}
+                        className={`h-10 w-full rounded-xl bg-gradient-to-br ${g.class} transition-all hover:scale-105 ${gradient === g.class && !bannerImage ? "ring-2 ring-offset-2 ring-[#1D9E75]" : ""}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="border-t border-black/[0.06] pt-3">
+                    <p className="text-xs font-semibold text-muted-foreground mb-2">或上传图片背景</p>
                     <button
-                      key={g}
-                      onClick={() => { setGradient(g); setShowGradientPicker(false); }}
-                      className={`h-8 w-8 rounded-full bg-gradient-to-br ${g} ${gradient === g ? "ring-2 ring-offset-1 ring-[#1D9E75]" : ""} hover:scale-110 transition-transform`}
-                    />
-                  ))}
+                      onClick={() => bannerInputRef.current?.click()}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-black/[0.12] py-2.5 text-xs text-muted-foreground hover:border-[#1D9E75]/40 hover:text-[#1D9E75] transition-colors"
+                    >
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      上传图片
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -145,8 +198,31 @@ export default function UserProfilePage({ params }: { params: { username: string
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           {/* Avatar + actions */}
           <div className="relative -mt-12 mb-6 flex items-end justify-between">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#1D9E75]/20 text-2xl font-bold text-[#1D9E75] shadow-lg">
-              {user.avatar}
+            <div className="relative group">
+              {avatarImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarImage}
+                  alt={user.name}
+                  className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg"
+                />
+              ) : (
+                <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#1D9E75]/20 text-2xl font-bold text-[#1D9E75] shadow-lg">
+                  {user.avatar}
+                </div>
+              )}
+              {isOwner && (
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="更换头像"
+                >
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-2 pb-1">
               {!isOwner && (
