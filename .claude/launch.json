@@ -3,8 +3,9 @@
   "configurations": [
     {
       "name": "forgex-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "-p", "3099"],
+      "runtimeExecutable": "/Users/boyudeng/Desktop/Trade/forgex/node_modules/.bin/next",
+      "runtimeArgs": ["dev", "-p", "3099"],
+      "cwd": "/Users/boyudeng/Desktop/Trade/forgex",
       "port": 3099
     }
   ]

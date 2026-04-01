@@ -4,14 +4,14 @@ import { Footer } from "@/components/footer";
 
 export default function SellPage() {
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.2]"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
@@ -38,7 +38,7 @@ export default function SellPage() {
               </button>
             </Link>
             <Link href="/marketplace">
-              <button className="rounded-xl border border-white/[0.08] px-7 py-3 font-semibold text-muted-foreground hover:text-white hover:border-white/20 transition-colors">
+              <button className="rounded-xl border border-black/[0.08] px-7 py-3 font-semibold text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors">
                 View Marketplace
               </button>
             </Link>
@@ -46,7 +46,7 @@ export default function SellPage() {
         </div>
 
         {/* Stats strip */}
-        <div className="mb-20 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-8 py-6">
+        <div className="mb-20 rounded-2xl border border-black/[0.06] bg-white px-8 py-6">
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
             {[
               { value: "85% payout", label: "You keep 85% of every sale" },
@@ -85,12 +85,12 @@ export default function SellPage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-7"
+                className="rounded-2xl border border-black/[0.06] bg-white p-7"
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#1D9E75]/15 text-sm font-bold text-[#1D9E75]">
                   {item.step}
                 </div>
-                <h3 className="mb-2 font-semibold text-white">{item.title}</h3>
+                <h3 className="mb-2 font-semibold text-[#111]">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
             ))}
@@ -121,7 +121,7 @@ export default function SellPage() {
             ].map((benefit) => (
               <div
                 key={benefit.title}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-7"
+                className="rounded-2xl border border-black/[0.06] bg-white p-7"
               >
                 <div className="mb-2 flex items-center gap-2.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#1D9E75]/15">
@@ -129,7 +129,7 @@ export default function SellPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h3 className="font-semibold text-white">{benefit.title}</h3>
+                  <h3 className="font-semibold text-[#111]">{benefit.title}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground pl-9">{benefit.desc}</p>
               </div>

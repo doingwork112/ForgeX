@@ -92,16 +92,16 @@ export default function OrdersPage() {
   ];
 
   const inputClass =
-    "w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors";
+    "w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors";
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.2]"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
@@ -114,7 +114,7 @@ export default function OrdersPage() {
         <div className="mb-8 flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="text-sm text-muted-foreground hover:text-white transition-colors"
+            className="text-sm text-muted-foreground hover:text-[#111] transition-colors"
           >
             ← Dashboard
           </Link>
@@ -133,7 +133,7 @@ export default function OrdersPage() {
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 filter === tab.key
                   ? "bg-[#1D9E75]/15 text-[#1D9E75] border border-[#1D9E75]/30"
-                  : "border border-white/[0.06] text-muted-foreground hover:text-white hover:border-white/20"
+                  : "border border-black/[0.06] text-muted-foreground hover:text-[#111] hover:border-black/[0.15]"
               }`}
             >
               {tab.label}
@@ -144,14 +144,14 @@ export default function OrdersPage() {
         {/* Orders list */}
         <div className="space-y-3">
           {filtered.length === 0 && (
-            <div className="flex h-40 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+            <div className="flex h-40 items-center justify-center rounded-2xl border border-black/[0.06] bg-white">
               <p className="text-sm text-muted-foreground">No orders found.</p>
             </div>
           )}
           {filtered.map((order) => (
             <div
               key={order.id}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-6 py-5"
+              className="rounded-2xl border border-black/[0.06] bg-white px-6 py-5"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 {/* Buyer info */}
@@ -160,7 +160,7 @@ export default function OrdersPage() {
                     {order.buyerAvatar}
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-white">{order.buyerName}</p>
+                    <p className="font-medium text-[#111]">{order.buyerName}</p>
                     <p className="truncate text-xs text-muted-foreground">
                       {order.buyerEmail}
                     </p>
@@ -169,7 +169,7 @@ export default function OrdersPage() {
 
                 {/* App + ID + date */}
                 <div className="flex flex-col gap-1 sm:items-center">
-                  <span className="inline-block rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-xs text-muted-foreground">
+                  <span className="inline-block rounded-full border border-black/[0.08] bg-white px-3 py-1 text-xs text-muted-foreground">
                     {order.appName}
                   </span>
                   <span className="text-[11px] text-muted-foreground/50">
@@ -201,7 +201,7 @@ export default function OrdersPage() {
                       </button>
                     )}
                     {order.status === "delivered" && (
-                      <button className="rounded-lg border border-white/[0.08] px-3 py-1.5 text-xs text-muted-foreground hover:text-white hover:border-white/20 transition-colors">
+                      <button className="rounded-lg border border-black/[0.08] px-3 py-1.5 text-xs text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors">
                         View Delivery
                       </button>
                     )}
@@ -227,14 +227,14 @@ export default function OrdersPage() {
               setDeliverModal({ open: false, orderId: "", url: "" });
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#0f0f0f] p-7 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-black/[0.08] bg-white p-7 shadow-2xl">
             <h2 className="mb-1 text-lg font-bold">Deliver Code</h2>
             <p className="mb-6 text-sm text-muted-foreground">
               Order #{deliverModal.orderId} · {modalOrder?.appName}
             </p>
 
             {/* Tabs */}
-            <div className="mb-5 flex gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
+            <div className="mb-5 flex gap-2 rounded-xl border border-black/[0.06] bg-white p-1">
               {(["github", "zip"] as const).map((tab) => (
                 <button
                   key={tab}
@@ -242,7 +242,7 @@ export default function OrdersPage() {
                   className={`flex-1 rounded-lg py-2 text-xs font-medium transition-colors ${
                     deliveryTab === tab
                       ? "bg-[#1D9E75]/15 text-[#1D9E75]"
-                      : "text-muted-foreground hover:text-white"
+                      : "text-muted-foreground hover:text-[#111]"
                   }`}
                 >
                   {tab === "github" ? "GitHub Repo" : "ZIP Download"}
@@ -275,7 +275,7 @@ export default function OrdersPage() {
                 onClick={() =>
                   setDeliverModal({ open: false, orderId: "", url: "" })
                 }
-                className="flex-1 rounded-xl border border-white/[0.08] py-2.5 text-sm text-muted-foreground hover:text-white hover:border-white/20 transition-colors"
+                className="flex-1 rounded-xl border border-black/[0.08] py-2.5 text-sm text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors"
               >
                 Cancel
               </button>

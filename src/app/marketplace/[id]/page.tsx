@@ -27,12 +27,12 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-foreground">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-foreground">
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div className="absolute inset-0 opacity-[0.2]" style={{
-          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
           backgroundSize: "28px 28px",
         }} />
       </div>
@@ -41,10 +41,10 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
 
       {/* Success toast */}
       {purchased && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#0a0a0a] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#f8f9fa] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
           <span className="text-[#1D9E75] text-xl">✓</span>
           <div>
-            <p className="text-sm font-semibold text-white">Purchase complete!</p>
+            <p className="text-sm font-semibold text-[#111]">Purchase complete!</p>
             <p className="text-xs text-muted-foreground">Code delivery link sent to your email.</p>
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
         {/* Back */}
         <Link
           href="/marketplace"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-white"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-[#111]"
         >
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -68,7 +68,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
           <div className="lg:col-span-3 space-y-8">
             {/* Gallery */}
             <div className="space-y-3">
-              <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-[#111] border border-white/[0.06]">
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-gray-100 border border-black/[0.06]">
                 <Image
                   src={app.screenshots[activeScreenshot]}
                   alt={`${app.name} screenshot`}
@@ -82,10 +82,10 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
                     <button
                       key={i}
                       onClick={() => setActiveScreenshot(i)}
-                      className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-[#111] border transition-all ${
+                      className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 border transition-all ${
                         activeScreenshot === i
                           ? "border-[#1D9E75] shadow-[0_0_12px_rgba(29,158,117,0.3)]"
-                          : "border-white/[0.06] opacity-50 hover:opacity-80"
+                          : "border-black/[0.06] opacity-50 hover:opacity-80"
                       }`}
                     >
                       <Image src={shot} alt="" fill className="object-cover" />
@@ -121,7 +121,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
 
           {/* Right — sticky card */}
           <div className="lg:col-span-2">
-            <div className="sticky top-20 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 backdrop-blur space-y-5">
+            <div className="sticky top-20 rounded-2xl border border-black/[0.08] bg-white p-6 backdrop-blur space-y-5">
               {/* Name */}
               <div>
                 <h1 className="text-2xl font-bold">{app.name}</h1>
@@ -156,7 +156,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
               <div className="space-y-2.5">
                 <Button
                   variant="outline"
-                  className="w-full border-white/10 hover:border-white/20 hover:bg-white/5"
+                  className="w-full border-black/[0.08] hover:border-black/[0.15] hover:bg-black/[0.04]"
                   onClick={() => window.open(app.demoUrl, "_blank")}
                 >
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="mr-2">
@@ -174,7 +174,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* What you get */}
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2">
+              <div className="rounded-xl border border-black/[0.06] bg-white p-3 space-y-2">
                 {["Full source code", "Lifetime access", "Free updates for 6 months", "MIT license"].map((item) => (
                   <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="text-[#1D9E75]">✓</span>
@@ -184,7 +184,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Seller */}
-              <div className="rounded-xl border border-white/[0.06] p-4">
+              <div className="rounded-xl border border-black/[0.06] p-4">
                 <p className="text-xs text-muted-foreground mb-3">Sold by</p>
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1D9E75]/20 text-sm font-semibold text-[#1D9E75]">
@@ -212,8 +212,8 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {relatedApps.map((related) => (
                 <Link key={related.id} href={`/marketplace/${related.id}`}>
-                  <div className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all hover:border-[#1D9E75]/40 hover:shadow-[0_0_24px_rgba(29,158,117,0.1)] hover:-translate-y-0.5">
-                    <div className="relative aspect-video bg-[#111]">
+                  <div className="group rounded-2xl border border-black/[0.06] bg-white overflow-hidden transition-all hover:border-[#1D9E75]/40 hover:shadow-[0_0_24px_rgba(29,158,117,0.1)] hover:-translate-y-0.5">
+                    <div className="relative aspect-video bg-gray-100">
                       <Image src="/placeholder-app.svg" alt={related.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="p-4">
@@ -238,11 +238,11 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowBuyModal(false)}
           />
-          <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/[0.1] bg-[#0f0f0f] p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+          <div className="relative z-10 w-full max-w-md rounded-3xl border border-black/[0.1] bg-white p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
             {/* Close */}
             <button
               onClick={() => setShowBuyModal(false)}
-              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-[#111] hover:bg-white/10 transition-colors"
             >
               ✕
             </button>
@@ -253,7 +253,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Summary */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3 mb-6">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-4 space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">App</span>
                 <span className="font-medium">{app.name}</span>
@@ -262,7 +262,7 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
                 <span className="text-muted-foreground">License</span>
                 <span className="font-medium">MIT · Full source</span>
               </div>
-              <div className="border-t border-white/[0.06] pt-3 flex justify-between">
+              <div className="border-t border-black/[0.06] pt-3 flex justify-between">
                 <span className="font-semibold">Total</span>
                 <span className="text-xl font-bold text-[#1D9E75]">${app.price}</span>
               </div>
@@ -273,18 +273,18 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
               <input
                 type="text"
                 placeholder="Card number"
-                className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   type="text"
                   placeholder="MM / YY"
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 />
                 <input
                   type="text"
                   placeholder="CVC"
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 />
               </div>
             </div>

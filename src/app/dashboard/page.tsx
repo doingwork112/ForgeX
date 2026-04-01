@@ -59,13 +59,13 @@ const sellerApp = apps.find((a) => a.id === "1");
 
 export default function DashboardPage() {
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.2]"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
@@ -97,7 +97,7 @@ export default function DashboardPage() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5"
+              className="rounded-2xl border border-black/[0.06] bg-white p-5"
             >
               <p className="mb-1 text-xs text-muted-foreground">{stat.label}</p>
               <p
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           {/* LEFT col */}
           <div className="space-y-6 lg:col-span-2">
             {/* Sales chart */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-semibold">Sales (Last 14 days)</h2>
                 <span className="text-sm text-[#1D9E75] font-semibold">
@@ -155,7 +155,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Recent orders */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6">
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="font-semibold">Recent Orders</h2>
                 <Link
@@ -169,7 +169,7 @@ export default function DashboardPage() {
                 {recentOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="flex items-center gap-4 rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3"
+                    className="flex items-center gap-4 rounded-xl border border-white/[0.04] bg-white px-4 py-3"
                   >
                     {/* Avatar */}
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1D9E75]/15 text-xs font-semibold text-[#1D9E75]">
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                     </div>
                     {/* Name + email */}
                     <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-medium text-white">
+                      <p className="truncate text-sm font-medium text-[#111]">
                         {order.buyerName}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
@@ -209,16 +209,16 @@ export default function DashboardPage() {
           {/* RIGHT col */}
           <div className="space-y-6">
             {/* My listings */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6">
               <h2 className="mb-4 font-semibold">My Listings</h2>
               {sellerApp && (
-                <div className="mb-4 rounded-xl border border-white/[0.04] bg-white/[0.02] overflow-hidden">
-                  <div className="aspect-video w-full bg-[#111] flex items-center justify-center">
+                <div className="mb-4 rounded-xl border border-white/[0.04] bg-white overflow-hidden">
+                  <div className="aspect-video w-full bg-gray-100 flex items-center justify-center">
                     <span className="text-xs text-muted-foreground/40">Preview</span>
                   </div>
                   <div className="p-4">
                     <div className="mb-1 flex items-center justify-between gap-2">
-                      <span className="font-medium text-white">{sellerApp.name}</span>
+                      <span className="font-medium text-[#111]">{sellerApp.name}</span>
                       <span className="text-sm font-bold text-[#1D9E75]">
                         ${sellerApp.price}
                       </span>
@@ -228,12 +228,12 @@ export default function DashboardPage() {
                     </p>
                     <div className="flex gap-2">
                       <Link href={`/marketplace/${sellerApp.id}`} className="flex-1">
-                        <button className="w-full rounded-lg border border-white/[0.08] py-1.5 text-xs text-muted-foreground hover:text-white hover:border-white/20 transition-colors">
+                        <button className="w-full rounded-lg border border-black/[0.08] py-1.5 text-xs text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors">
                           Manage
                         </button>
                       </Link>
                       <Link href="/sell/new" className="flex-1">
-                        <button className="w-full rounded-lg border border-white/[0.08] py-1.5 text-xs text-muted-foreground hover:text-white hover:border-white/20 transition-colors">
+                        <button className="w-full rounded-lg border border-black/[0.08] py-1.5 text-xs text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors">
                           Edit
                         </button>
                       </Link>
@@ -249,7 +249,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick actions */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6">
               <h2 className="mb-4 font-semibold">Quick Actions</h2>
               <div className="space-y-2">
                 {[
@@ -258,7 +258,7 @@ export default function DashboardPage() {
                   { label: "My Public Profile", href: "/sellers/alex-chen" },
                 ].map((action) => (
                   <Link key={action.href} href={action.href}>
-                    <button className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-left text-sm text-muted-foreground hover:text-white hover:border-white/20 hover:bg-white/[0.04] transition-colors">
+                    <button className="w-full rounded-xl border border-black/[0.06] bg-white px-4 py-3 text-left text-sm text-muted-foreground hover:text-[#111] hover:border-black/[0.15] hover:bg-white transition-colors">
                       {action.label}
                       <span className="float-right text-muted-foreground/40">→</span>
                     </button>

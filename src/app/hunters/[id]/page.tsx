@@ -45,12 +45,12 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div className="absolute inset-0 opacity-[0.2]" style={{
-          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
           backgroundSize: "28px 28px",
         }} />
       </div>
@@ -59,10 +59,10 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
 
       {/* Success toast */}
       {submitSuccess && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#0a0a0a] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#f8f9fa] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
           <span className="text-[#1D9E75] text-xl">✓</span>
           <div>
-            <p className="text-sm font-semibold text-white">Demo submitted!</p>
+            <p className="text-sm font-semibold text-[#111]">Demo submitted!</p>
             <p className="text-xs text-muted-foreground">The bounty poster will review your submission.</p>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
         {/* Back */}
         <Link
           href="/hunters"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-white"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-[#111]"
         >
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -101,13 +101,13 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
             </div>
 
             {/* Description */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 space-y-3">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6 space-y-3">
               <h2 className="font-semibold">Description</h2>
               <p className="text-muted-foreground leading-relaxed text-sm">{bounty.description}</p>
             </div>
 
             {/* What to build */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 space-y-3">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6 space-y-3">
               <h2 className="font-semibold">Submission requirements</h2>
               <ul className="space-y-2.5">
                 {[
@@ -138,7 +138,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                       href={ref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-sm text-[#1D9E75] hover:border-[#1D9E75]/30 transition-colors group"
+                      className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-4 py-3 text-sm text-[#1D9E75] hover:border-[#1D9E75]/30 transition-colors group"
                     >
                       <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="shrink-0">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -153,7 +153,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
 
           {/* Right */}
           <div className="lg:w-[340px] shrink-0">
-            <div className="sticky top-20 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 space-y-5">
+            <div className="sticky top-20 rounded-2xl border border-black/[0.08] bg-white p-6 space-y-5">
               {/* Budget */}
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Bounty</p>
@@ -166,7 +166,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                 <p className="text-xs text-muted-foreground mt-1">Paid on acceptance</p>
               </div>
 
-              <div className="border-t border-white/[0.06]" />
+              <div className="border-t border-black/[0.06]" />
 
               {/* Details */}
               <div className="space-y-3 text-sm">
@@ -188,7 +188,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                 </div>
               </div>
 
-              <div className="border-t border-white/[0.06]" />
+              <div className="border-t border-black/[0.06]" />
 
               {/* Poster */}
               <div className="flex items-center gap-3">
@@ -222,10 +222,10 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowSubmitModal(false)} />
-          <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/[0.1] bg-[#0f0f0f] p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+          <div className="relative z-10 w-full max-w-md rounded-3xl border border-black/[0.1] bg-white p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
             <button
               onClick={() => setShowSubmitModal(false)}
-              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-[#111] hover:bg-white/10 transition-colors"
             >
               ✕
             </button>
@@ -245,7 +245,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                   placeholder="https://your-demo.vercel.app"
                   value={submitForm.demoUrl}
                   onChange={(e) => setSubmitForm(f => ({ ...f, demoUrl: e.target.value }))}
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 />
                 <p className="text-xs text-muted-foreground mt-1">Must be a live, publicly accessible URL</p>
               </div>
@@ -255,7 +255,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                 <input
                   type="url"
                   placeholder="https://github.com/you/repo"
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -266,7 +266,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                   placeholder="Describe what you built, tech stack used, any special features..."
                   value={submitForm.notes}
                   onChange={(e) => setSubmitForm(f => ({ ...f, notes: e.target.value }))}
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none resize-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none resize-none transition-colors"
                 />
               </div>
             </div>
@@ -274,7 +274,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
             <div className="flex gap-3">
               <Button
                 variant="ghost"
-                className="flex-1 text-muted-foreground hover:text-white"
+                className="flex-1 text-muted-foreground hover:text-[#111]"
                 onClick={() => setShowSubmitModal(false)}
               >
                 Cancel

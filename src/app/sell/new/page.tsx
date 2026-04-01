@@ -48,7 +48,7 @@ const defaultForm: FormData = {
 };
 
 const inputClass =
-  "w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors";
+  "w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors";
 
 export default function NewListingPage() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -140,13 +140,13 @@ export default function NewListingPage() {
 
   if (published) {
     return (
-      <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+      <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
           <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
           <div
             className="absolute inset-0 opacity-[0.2]"
             style={{
-              backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+              backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
               backgroundSize: "28px 28px",
             }}
           />
@@ -174,7 +174,7 @@ export default function NewListingPage() {
                 setStep(1);
                 setPublished(false);
               }}
-              className="rounded-xl border border-white/[0.08] px-7 py-3 font-semibold text-muted-foreground hover:text-white hover:border-white/20 transition-colors"
+              className="rounded-xl border border-black/[0.08] px-7 py-3 font-semibold text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors"
             >
               List Another
             </button>
@@ -185,13 +185,13 @@ export default function NewListingPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.2]"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
@@ -213,7 +213,7 @@ export default function NewListingPage() {
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
                     step === s.num
-                      ? "bg-[#1D9E75] text-white"
+                      ? "bg-[#1D9E75] text-[#111]"
                       : step > s.num
                       ? "bg-[#1D9E75]/20 text-[#1D9E75]"
                       : "bg-white/[0.06] text-muted-foreground"
@@ -247,7 +247,7 @@ export default function NewListingPage() {
         </div>
 
         {/* Step card */}
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-8">
+        <div className="rounded-2xl border border-black/[0.08] bg-white p-8">
           {/* STEP 1 */}
           {step === 1 && (
             <div className="space-y-6">
@@ -282,7 +282,7 @@ export default function NewListingPage() {
                   Category
                 </label>
                 <select
-                  className={inputClass + " cursor-pointer bg-[#111]"}
+                  className={inputClass + " cursor-pointer bg-gray-100"}
                   value={form.category}
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                 >
@@ -308,7 +308,7 @@ export default function NewListingPage() {
                       className={`rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
                         form.techStack.includes(t)
                           ? "border-[#1D9E75]/50 bg-[#1D9E75]/10 text-[#1D9E75]"
-                          : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/20 hover:text-white"
+                          : "border-black/[0.08] bg-white text-muted-foreground hover:border-black/[0.15] hover:text-[#111]"
                       }`}
                     >
                       {t}
@@ -355,7 +355,7 @@ export default function NewListingPage() {
                         <button
                           type="button"
                           onClick={() => removeFeature(i)}
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] text-muted-foreground hover:text-white hover:border-white/20 transition-colors"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-black/[0.08] text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors"
                         >
                           ×
                         </button>
@@ -426,7 +426,7 @@ export default function NewListingPage() {
                         <button
                           type="button"
                           onClick={() => removeScreenshot(i)}
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] text-muted-foreground hover:text-white hover:border-white/20 transition-colors"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-black/[0.08] text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors"
                         >
                           ×
                         </button>
@@ -471,7 +471,7 @@ export default function NewListingPage() {
                 </div>
 
                 {form.price && parseFloat(form.price) > 0 && (
-                  <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-2 text-sm">
+                  <div className="mt-4 rounded-xl border border-black/[0.06] bg-white p-4 space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Sale price</span>
                       <span className="text-white">${parseFloat(form.price).toFixed(2)}</span>
@@ -480,8 +480,8 @@ export default function NewListingPage() {
                       <span className="text-muted-foreground">Platform fee (15%)</span>
                       <span className="text-muted-foreground">-${fee}</span>
                     </div>
-                    <div className="flex justify-between border-t border-white/[0.06] pt-2">
-                      <span className="font-medium text-white">You earn</span>
+                    <div className="flex justify-between border-t border-black/[0.06] pt-2">
+                      <span className="font-medium text-[#111]">You earn</span>
                       <span className="font-semibold text-[#1D9E75]">${earnings}</span>
                     </div>
                   </div>
@@ -501,10 +501,10 @@ export default function NewListingPage() {
                       className={`rounded-xl border px-4 py-4 text-left transition-colors ${
                         form.deliveryType === type
                           ? "border-[#1D9E75]/50 bg-[#1D9E75]/10"
-                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20"
+                          : "border-black/[0.08] bg-white hover:border-black/[0.15]"
                       }`}
                     >
-                      <div className="mb-1 text-sm font-semibold text-white">
+                      <div className="mb-1 text-sm font-semibold text-[#111]">
                         {type === "github" ? "GitHub Repo" : "ZIP Download"}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -539,7 +539,7 @@ export default function NewListingPage() {
                   className={`mt-0.5 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded border transition-colors ${
                     form.terms
                       ? "border-[#1D9E75] bg-[#1D9E75]"
-                      : "border-white/20 bg-transparent hover:border-white/40"
+                      : "border-black/[0.15] bg-transparent hover:border-white/40"
                   }`}
                 >
                   {form.terms && (
@@ -561,7 +561,7 @@ export default function NewListingPage() {
           {step > 1 ? (
             <button
               onClick={handleBack}
-              className="rounded-xl border border-white/[0.08] px-5 py-2.5 text-sm font-medium text-muted-foreground hover:text-white hover:border-white/20 transition-colors"
+              className="rounded-xl border border-black/[0.08] px-5 py-2.5 text-sm font-medium text-muted-foreground hover:text-[#111] hover:border-black/[0.15] transition-colors"
             >
               Back
             </button>

@@ -57,12 +57,12 @@ export default function MarketplacePage() {
   const hasFilters = selectedCategory !== "All" || selectedTechStacks.length > 0 || priceRange.min || priceRange.max || search;
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div className="absolute inset-0 opacity-[0.2]" style={{
-          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
           backgroundSize: "28px 28px",
         }} />
       </div>
@@ -92,14 +92,14 @@ export default function MarketplacePage() {
               placeholder="Search apps..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] py-2.5 pl-9 pr-4 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none focus:ring-1 focus:ring-[#1D9E75]/40 transition-colors"
+              className="w-full rounded-xl border border-black/[0.08] bg-white py-2.5 pl-9 pr-4 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none focus:ring-1 focus:ring-[#1D9E75]/40 transition-colors"
             />
           </div>
           <div className="flex items-center gap-3">
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="rounded-xl border border-white/[0.08] bg-[#111] py-2.5 px-3 text-sm text-white focus:border-[#1D9E75]/50 focus:outline-none transition-colors cursor-pointer"
+              className="rounded-xl border border-black/[0.08] bg-gray-100 py-2.5 px-3 text-sm text-white focus:border-[#1D9E75]/50 focus:outline-none transition-colors cursor-pointer"
             >
               {sortOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -108,7 +108,7 @@ export default function MarketplacePage() {
             {hasFilters && (
               <button
                 onClick={clearFilters}
-                className="text-xs text-muted-foreground hover:text-white transition-colors px-3 py-2 rounded-xl border border-white/[0.08] hover:border-white/20"
+                className="text-xs text-muted-foreground hover:text-[#111] transition-colors px-3 py-2 rounded-xl border border-black/[0.08] hover:border-black/[0.15]"
               >
                 Clear
               </button>
@@ -133,7 +133,7 @@ export default function MarketplacePage() {
                       className={`rounded-lg px-3 py-1.5 text-left text-sm transition-colors ${
                         selectedCategory === category
                           ? "bg-[#1D9E75]/15 text-[#1D9E75] font-medium"
-                          : "text-muted-foreground hover:text-white hover:bg-white/5"
+                          : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
                       }`}
                     >
                       {category}
@@ -151,14 +151,14 @@ export default function MarketplacePage() {
                   {techStacks.map((stack) => (
                     <label
                       key={stack}
-                      className="flex cursor-pointer items-center gap-2.5 text-sm text-muted-foreground hover:text-white transition-colors"
+                      className="flex cursor-pointer items-center gap-2.5 text-sm text-muted-foreground hover:text-[#111] transition-colors"
                     >
                       <div
                         onClick={() => toggleTechStack(stack)}
                         className={`h-4 w-4 shrink-0 rounded border transition-colors cursor-pointer flex items-center justify-center ${
                           selectedTechStacks.includes(stack)
                             ? "border-[#1D9E75] bg-[#1D9E75]"
-                            : "border-white/20 bg-transparent hover:border-white/40"
+                            : "border-black/[0.15] bg-transparent hover:border-white/40"
                         }`}
                       >
                         {selectedTechStacks.includes(stack) && (
@@ -184,7 +184,7 @@ export default function MarketplacePage() {
                     placeholder="Min"
                     value={priceRange.min}
                     onChange={(e) => setPriceRange((p) => ({ ...p, min: e.target.value }))}
-                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                    className="w-full rounded-lg border border-black/[0.08] bg-white px-3 py-2 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                   />
                   <span className="text-muted-foreground text-xs shrink-0">–</span>
                   <input
@@ -192,7 +192,7 @@ export default function MarketplacePage() {
                     placeholder="Max"
                     value={priceRange.max}
                     onChange={(e) => setPriceRange((p) => ({ ...p, max: e.target.value }))}
-                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                    className="w-full rounded-lg border border-black/[0.08] bg-white px-3 py-2 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -206,7 +206,7 @@ export default function MarketplacePage() {
             </p>
 
             {filteredApps.length === 0 ? (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] text-muted-foreground">
+              <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-black/[0.06] bg-white text-muted-foreground">
                 <span className="text-4xl">🔍</span>
                 <p className="text-sm">No apps match your filters.</p>
                 <button onClick={clearFilters} className="text-xs text-[#1D9E75] hover:underline">
@@ -217,9 +217,9 @@ export default function MarketplacePage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {filteredApps.map((app) => (
                   <Link key={app.id} href={`/marketplace/${app.id}`}>
-                    <div className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all duration-300 hover:border-[#1D9E75]/40 hover:shadow-[0_0_28px_rgba(29,158,117,0.12)] hover:-translate-y-0.5 cursor-pointer">
+                    <div className="group relative rounded-2xl border border-black/[0.06] bg-white overflow-hidden transition-all duration-300 hover:border-[#1D9E75]/40 hover:shadow-[0_0_28px_rgba(29,158,117,0.12)] hover:-translate-y-0.5 cursor-pointer">
                       {/* Screenshot */}
-                      <div className="relative aspect-video w-full overflow-hidden bg-[#111]">
+                      <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
                         <Image
                           src="/placeholder-app.svg"
                           alt={app.name}
@@ -238,12 +238,12 @@ export default function MarketplacePage() {
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex flex-wrap gap-1">
                             {app.techStack.slice(0, 2).map((tech) => (
-                              <span key={tech} className="rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
+                              <span key={tech} className="rounded-md border border-black/[0.08] bg-white px-2 py-0.5 text-[11px] text-muted-foreground">
                                 {tech}
                               </span>
                             ))}
                             {app.techStack.length > 2 && (
-                              <span className="rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
+                              <span className="rounded-md border border-black/[0.08] bg-white px-2 py-0.5 text-[11px] text-muted-foreground">
                                 +{app.techStack.length - 2}
                               </span>
                             )}

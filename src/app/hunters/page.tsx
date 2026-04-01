@@ -41,12 +41,12 @@ export default function HuntersPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[#1D9E75]/[0.06] blur-[100px]" />
         <div className="absolute inset-0 opacity-[0.2]" style={{
-          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
           backgroundSize: "28px 28px",
         }} />
       </div>
@@ -55,10 +55,10 @@ export default function HuntersPage() {
 
       {/* Success toast */}
       {postSuccess && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#0a0a0a] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/30 bg-[#f8f9fa] px-6 py-4 shadow-[0_0_40px_rgba(29,158,117,0.2)] animate-fade-up">
           <span className="text-[#1D9E75] text-xl">✓</span>
           <div>
-            <p className="text-sm font-semibold text-white">Bounty posted!</p>
+            <p className="text-sm font-semibold text-[#111]">Bounty posted!</p>
             <p className="text-xs text-muted-foreground">Builders will be notified.</p>
           </div>
         </div>
@@ -82,14 +82,14 @@ export default function HuntersPage() {
         </div>
 
         {/* Stats strip */}
-        <div className="mb-8 grid grid-cols-3 gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="mb-8 grid grid-cols-3 gap-4 rounded-2xl border border-black/[0.06] bg-white p-4">
           {[
             { value: bounties.filter(b => b.status === "open").length, label: "Open Bounties" },
             { value: bounties.reduce((s, b) => s + b.submissions, 0), label: "Total Submissions" },
             { value: `$${bounties.reduce((s, b) => s + b.budget, 0).toLocaleString()}`, label: "Total Budget" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-xl font-bold text-white">{stat.value}</p>
+              <p className="text-xl font-bold text-[#111]">{stat.value}</p>
               <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
             </div>
           ))}
@@ -104,7 +104,7 @@ export default function HuntersPage() {
               className={`shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === cat
                   ? "bg-[#1D9E75] text-white shadow-[0_0_16px_rgba(29,158,117,0.3)]"
-                  : "border border-white/[0.08] text-muted-foreground hover:text-white hover:border-white/20"
+                  : "border border-black/[0.08] text-muted-foreground hover:text-[#111] hover:border-black/[0.15]"
               }`}
             >
               {cat}
@@ -118,7 +118,7 @@ export default function HuntersPage() {
             const status = statusConfig[bounty.status];
             return (
               <Link key={bounty.id} href={`/hunters/${bounty.id}`}>
-                <div className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all hover:border-[#1D9E75]/40 hover:shadow-[0_0_24px_rgba(29,158,117,0.1)] hover:-translate-y-0.5 cursor-pointer">
+                <div className="group rounded-2xl border border-black/[0.06] bg-white p-6 transition-all hover:border-[#1D9E75]/40 hover:shadow-[0_0_24px_rgba(29,158,117,0.1)] hover:-translate-y-0.5 cursor-pointer">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 flex-wrap mb-2">
@@ -178,10 +178,10 @@ export default function HuntersPage() {
       {showPostModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowPostModal(false)} />
-          <div className="relative z-10 w-full max-w-lg rounded-3xl border border-white/[0.1] bg-[#0f0f0f] p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)] max-h-[90vh] overflow-y-auto">
+          <div className="relative z-10 w-full max-w-lg rounded-3xl border border-black/[0.1] bg-white p-8 shadow-[0_0_80px_rgba(0,0,0,0.8)] max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowPostModal(false)}
-              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-[#111] hover:bg-white/10 transition-colors"
             >
               ✕
             </button>
@@ -199,7 +199,7 @@ export default function HuntersPage() {
                   placeholder="e.g. Food delivery app like Uber Eats"
                   value={form.title}
                   onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -210,7 +210,7 @@ export default function HuntersPage() {
                   placeholder="Describe the features you need in detail..."
                   value={form.description}
                   onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none resize-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none resize-none transition-colors"
                 />
               </div>
 
@@ -222,7 +222,7 @@ export default function HuntersPage() {
                     placeholder="e.g. 1000"
                     value={form.budget}
                     onChange={(e) => setForm(f => ({ ...f, budget: e.target.value }))}
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
@@ -231,7 +231,7 @@ export default function HuntersPage() {
                     type="date"
                     value={form.deadline}
                     onChange={(e) => setForm(f => ({ ...f, deadline: e.target.value }))}
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-white focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                     style={{ colorScheme: "dark" }}
                   />
                 </div>
@@ -242,7 +242,7 @@ export default function HuntersPage() {
                 <select
                   value={form.category}
                   onChange={(e) => setForm(f => ({ ...f, category: e.target.value }))}
-                  className="w-full rounded-xl border border-white/[0.08] bg-[#111] px-4 py-3 text-sm text-white focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-gray-100 px-4 py-3 text-sm text-white focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 >
                   {["SaaS","E-Commerce","Social","Tools","Restaurant","Booking","Finance","Education","Health"].map(c => (
                     <option key={c} value={c}>{c}</option>
@@ -257,7 +257,7 @@ export default function HuntersPage() {
                   placeholder="https://example.com, https://another.com"
                   value={form.references}
                   onChange={(e) => setForm(f => ({ ...f, references: e.target.value }))}
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
                 />
                 <p className="text-xs text-muted-foreground mt-1">Comma-separated URLs of apps you like</p>
               </div>
@@ -266,7 +266,7 @@ export default function HuntersPage() {
             <div className="mt-6 flex gap-3">
               <Button
                 variant="ghost"
-                className="flex-1 text-muted-foreground hover:text-white"
+                className="flex-1 text-muted-foreground hover:text-[#111]"
                 onClick={() => setShowPostModal(false)}
               >
                 Cancel

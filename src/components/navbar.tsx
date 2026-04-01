@@ -17,7 +17,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#0a0a0a]/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#f8f9fa]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         {/* Left */}
         <div className="flex items-center gap-8">
@@ -37,8 +37,8 @@ export function Navbar() {
                 href={link.href}
                 className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                   pathname.startsWith(link.href)
-                    ? "text-white bg-white/8"
-                    : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    ? "text-white bg-black/[0.05]"
+                    : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
                 }`}
               >
                 {link.label}
@@ -51,7 +51,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link href="/dashboard">
             <button
-              className="hidden md:flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
+              className="hidden md:flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors"
               title="Dashboard"
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -67,7 +67,7 @@ export function Navbar() {
           </Button>
           {/* Mobile hamburger */}
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-white hover:bg-white/5 transition-colors md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors md:hidden"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -86,7 +86,7 @@ export function Navbar() {
 
       {/* Mobile dropdown */}
       {mobileOpen && (
-        <div className="border-t border-white/[0.06] bg-[#0a0a0a]/95 px-6 py-4 md:hidden">
+        <div className="border-t border-black/[0.06] bg-[#f8f9fa]/95 px-6 py-4 md:hidden">
           <div className="flex flex-col gap-1">
             {links.map((link) => (
               <Link
@@ -95,8 +95,8 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={`rounded-md px-3 py-2 text-sm transition-colors ${
                   pathname.startsWith(link.href)
-                    ? "text-white bg-white/8"
-                    : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    ? "text-white bg-black/[0.05]"
+                    : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
                 }`}
               >
                 {link.label}
@@ -107,13 +107,13 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
               className={`rounded-md px-3 py-2 text-sm transition-colors ${
                 pathname.startsWith("/dashboard")
-                  ? "text-white bg-white/8"
-                  : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  ? "text-white bg-black/[0.05]"
+                  : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
               }`}
             >
               Dashboard
             </Link>
-            <div className="mt-3 pt-3 border-t border-white/[0.06]">
+            <div className="mt-3 pt-3 border-t border-black/[0.06]">
               <Button size="sm" className="w-full bg-accent text-white hover:bg-accent/90">
                 Sign in
               </Button>

@@ -39,7 +39,7 @@ const featuredApps = apps.slice(0, 6);
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#f8f9fa] overflow-x-hidden">
       {/* ─── Global background glow ─── */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="animate-glow-pulse absolute -top-32 left-1/2 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-[#1D9E75]/[0.08] blur-[120px]" />
@@ -49,7 +49,7 @@ export default function HomePage() {
         <div
           className="absolute inset-0 opacity-[0.25]"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
@@ -95,7 +95,7 @@ export default function HomePage() {
             <Button
               variant="outline"
               size="lg"
-              className="px-8 border-white/15 text-white hover:bg-white/5 hover:border-white/30"
+              className="px-8 border-white/15 text-white hover:bg-black/[0.04] hover:border-white/30"
             >
               Post a Bounty
             </Button>
@@ -111,10 +111,10 @@ export default function HomePage() {
 
       {/* ─── Stats ─── */}
       <section className="mx-auto max-w-4xl px-6 pb-20">
-        <div className="grid grid-cols-2 gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl border border-black/[0.06] bg-white p-6 backdrop-blur sm:grid-cols-4">
           {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col items-center gap-1 text-center">
-              <span className="text-2xl font-bold text-white md:text-3xl">{stat.value}</span>
+              <span className="text-2xl font-bold text-[#111] md:text-3xl">{stat.value}</span>
               <span className="text-xs text-muted-foreground">{stat.label}</span>
             </div>
           ))}
@@ -131,7 +131,7 @@ export default function HomePage() {
           {steps.map((step, i) => (
             <div
               key={step.number}
-              className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 transition-all hover:border-[#1D9E75]/30 hover:bg-[#1D9E75]/[0.03]"
+              className="group relative rounded-2xl border border-black/[0.06] bg-white p-8 transition-all hover:border-[#1D9E75]/30 hover:bg-[#1D9E75]/[0.03]"
             >
               {/* Connector line */}
               {i < steps.length - 1 && (
@@ -159,7 +159,7 @@ export default function HomePage() {
           </div>
           <Link
             href="/marketplace"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-white flex items-center gap-1.5 shrink-0"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-[#111] flex items-center gap-1.5 shrink-0"
           >
             View all <span>&rarr;</span>
           </Link>
@@ -168,9 +168,9 @@ export default function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featuredApps.map((app) => (
             <Link key={app.id} href={`/marketplace/${app.id}`}>
-              <div className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all duration-300 hover:border-[#1D9E75]/40 hover:shadow-[0_0_30px_rgba(29,158,117,0.1)] hover:-translate-y-0.5">
+              <div className="group relative rounded-2xl border border-black/[0.06] bg-white overflow-hidden transition-all duration-300 hover:border-[#1D9E75]/40 hover:shadow-[0_0_30px_rgba(29,158,117,0.1)] hover:-translate-y-0.5">
                 {/* Screenshot */}
-                <div className="relative aspect-video w-full overflow-hidden bg-[#111]">
+                <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
                   <Image
                     src="/placeholder-app.svg"
                     alt={app.name}
@@ -234,7 +234,7 @@ export default function HomePage() {
                 <Button
                   variant="ghost"
                   size="lg"
-                  className="text-muted-foreground hover:text-white px-8"
+                  className="text-muted-foreground hover:text-[#111] px-8"
                 >
                   Browse Marketplace
                 </Button>
