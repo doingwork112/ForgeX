@@ -10,12 +10,18 @@ export function Footer() {
             <span className="text-xs text-muted-foreground">The marketplace for ready-made apps.</span>
           </div>
 
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
             <Link href="/marketplace" className="transition-colors hover:text-[#111]">
               Marketplace
             </Link>
             <Link href="/hunters" className="transition-colors hover:text-[#111]">
               Hunters
+            </Link>
+            <Link href="/community" className="transition-colors hover:text-[#111]">
+              Community
+            </Link>
+            <Link href="/sell" className="transition-colors hover:text-[#111]">
+              Sell
             </Link>
             <Link href="/home" className="transition-colors hover:text-[#111]">
               Home

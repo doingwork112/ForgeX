@@ -229,7 +229,7 @@ export default function NewListingPage() {
                 </div>
                 <span
                   className={`text-[11px] font-medium ${
-                    step === s.num ? "text-white" : "text-muted-foreground"
+                    step === s.num ? "text-[#111]" : "text-muted-foreground"
                   }`}
                 >
                   {s.label}
@@ -474,7 +474,7 @@ export default function NewListingPage() {
                   <div className="mt-4 rounded-xl border border-black/[0.06] bg-white p-4 space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Sale price</span>
-                      <span className="text-white">${parseFloat(form.price).toFixed(2)}</span>
+                      <span className="text-[#111] font-semibold">${parseFloat(form.price).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Platform fee (15%)</span>

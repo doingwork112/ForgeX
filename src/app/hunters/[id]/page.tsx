@@ -94,7 +94,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1D9E75]/15 text-xs font-semibold text-[#1D9E75]">
                   {bounty.poster.avatar}
                 </div>
-                <span>Posted by <span className="text-white">{bounty.poster.name}</span></span>
+                <span>Posted by <span className="text-[#111] font-medium">{bounty.poster.name}</span></span>
                 <span className="opacity-30">·</span>
                 <span>{bounty.submissions} submissions</span>
               </div>

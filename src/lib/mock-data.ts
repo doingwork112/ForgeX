@@ -420,6 +420,170 @@ export const mockOrders: Order[] = [
   },
 ];
 
+export interface ForgePost {
+  id: string;
+  authorName: string;
+  authorAvatar: string;
+  authorUsername: string;
+  content: string;
+  tag: "#buildinpublic" | "#launch" | "#feedback" | "#collab";
+  reactions: { fire: number; bulb: number; clap: number; eyes: number };
+  comments: number;
+  createdAt: string;
+  appRef?: { id: string; name: string };
+}
+
+export interface UserProfile {
+  username: string;
+  name: string;
+  avatar: string;
+  bannerGradient: string;
+  bio: string;
+  currentlyBuilding: string;
+  location: string;
+  website: string;
+  twitter: string;
+  github: string;
+  joinedAt: string;
+  badges: { id: string; label: string; icon: string; color: string }[];
+  appIds: string[];
+  stats: { posts: number; sales: number; reputation: number };
+}
+
+export const forgePosts: ForgePost[] = [
+  {
+    id: "fp-1",
+    authorName: "Alex Chen",
+    authorAvatar: "AC",
+    authorUsername: "alexchen",
+    content: "Just shipped v2 of InvoiceFlow with AI-powered invoice generation. Went from idea to production in 3 weeks. The hardest part wasn't the code — it was pricing it right. 🚀",
+    tag: "#launch",
+    reactions: { fire: 34, bulb: 12, clap: 28, eyes: 7 },
+    comments: 11,
+    createdAt: "2026-03-31T14:30:00Z",
+    appRef: { id: "1", name: "InvoiceFlow" },
+  },
+  {
+    id: "fp-2",
+    authorName: "Sarah Kim",
+    authorAvatar: "SK",
+    authorUsername: "sarahkim",
+    content: "Day 14 of building ShopBase in public. Completed the Stripe webhook integration today. The documentation is actually great once you stop trying to skim it lol. Tomorrow: admin dashboard.",
+    tag: "#buildinpublic",
+    reactions: { fire: 21, bulb: 18, clap: 14, eyes: 9 },
+    comments: 6,
+    createdAt: "2026-03-30T09:15:00Z",
+    appRef: { id: "4", name: "ShopBase" },
+  },
+  {
+    id: "fp-3",
+    authorName: "Dev Studio",
+    authorAvatar: "DS",
+    authorUsername: "devstudio",
+    content: "Hot take: most 'AI-powered' tools are just wrappers with a lot of prompt engineering. CodeReviewAI actually trains on your repo history so reviews improve over time. Happy to explain the architecture in the comments.",
+    tag: "#feedback",
+    reactions: { fire: 47, bulb: 39, clap: 22, eyes: 31 },
+    comments: 24,
+    createdAt: "2026-03-29T18:00:00Z",
+    appRef: { id: "5", name: "CodeReviewAI" },
+  },
+  {
+    id: "fp-4",
+    authorName: "Nina Patel",
+    authorAvatar: "NP",
+    authorUsername: "ninapatel",
+    content: "Looking for a React Native dev to collab on a meditation app bounty. Budget is $1.2k, timeline 6 weeks. Strong design already done, need solid mobile dev. DM me or reply here!",
+    tag: "#collab",
+    reactions: { fire: 8, bulb: 5, clap: 3, eyes: 19 },
+    comments: 7,
+    createdAt: "2026-03-29T11:30:00Z",
+  },
+  {
+    id: "fp-5",
+    authorName: "James Wu",
+    authorAvatar: "JW",
+    authorUsername: "jameswu",
+    content: "TableSync crossed $5k in sales this month. Never thought a restaurant reservation app would be my best seller. The restaurant industry is genuinely underserved by modern software.",
+    tag: "#buildinpublic",
+    reactions: { fire: 62, bulb: 14, clap: 53, eyes: 11 },
+    comments: 18,
+    createdAt: "2026-03-28T16:45:00Z",
+    appRef: { id: "3", name: "TableSync" },
+  },
+  {
+    id: "fp-6",
+    authorName: "Olivia Park",
+    authorAvatar: "OP",
+    authorUsername: "oliviapark",
+    content: "Honest question for the community: how do you handle app support after selling? I've been spending ~5 hours/week on support emails for BookEase. Is that normal? Worth charging for it?",
+    tag: "#feedback",
+    reactions: { fire: 11, bulb: 28, clap: 9, eyes: 14 },
+    comments: 22,
+    createdAt: "2026-03-27T10:00:00Z",
+    appRef: { id: "6", name: "BookEase" },
+  },
+  {
+    id: "fp-7",
+    authorName: "Ryan Torres",
+    authorAvatar: "RT",
+    authorUsername: "ryantor",
+    content: "LearnHub getting its first enterprise inquiry today — a coding bootcamp wants to license it for 200 students. No idea how to price enterprise. Thread on what I'm thinking 👇",
+    tag: "#buildinpublic",
+    reactions: { fire: 29, bulb: 33, clap: 18, eyes: 22 },
+    comments: 15,
+    createdAt: "2026-03-26T13:20:00Z",
+    appRef: { id: "7", name: "LearnHub" },
+  },
+];
+
+export const userProfiles: UserProfile[] = [
+  {
+    username: "alexchen",
+    name: "Alex Chen",
+    avatar: "AC",
+    bannerGradient: "from-[#1D9E75] to-[#0d6e52]",
+    bio: "Full-stack dev. Building SaaS tools that actually make money. 5+ years with Next.js & Supabase.",
+    currentlyBuilding: "InvoiceFlow v3 with recurring billing",
+    location: "San Francisco, CA",
+    website: "alexchen.dev",
+    twitter: "alexchendev",
+    github: "alexchen",
+    joinedAt: "2025-06-01",
+    badges: [
+      { id: "top-seller", label: "Top Seller", icon: "🏆", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+      { id: "first-sale", label: "First Sale", icon: "💰", color: "bg-green-100 text-green-700 border-green-200" },
+      { id: "builder", label: "Builder", icon: "🔨", color: "bg-blue-100 text-blue-700 border-blue-200" },
+      { id: "community", label: "Community Star", icon: "⭐", color: "bg-purple-100 text-purple-700 border-purple-200" },
+    ],
+    appIds: ["1"],
+    stats: { posts: 24, sales: 23, reputation: 412 },
+  },
+  {
+    username: "sarahkim",
+    name: "Sarah Kim",
+    avatar: "SK",
+    bannerGradient: "from-purple-500 to-pink-500",
+    bio: "E-commerce specialist. Built 30+ headless commerce solutions. All products MIT licensed.",
+    currentlyBuilding: "ShopBase Pro with multi-vendor support",
+    location: "Seoul, Korea",
+    website: "sarahkim.io",
+    twitter: "sarahkimdev",
+    github: "sarahkim",
+    joinedAt: "2025-04-15",
+    badges: [
+      { id: "first-sale", label: "First Sale", icon: "💰", color: "bg-green-100 text-green-700 border-green-200" },
+      { id: "builder", label: "Builder", icon: "🔨", color: "bg-blue-100 text-blue-700 border-blue-200" },
+    ],
+    appIds: ["4"],
+    stats: { posts: 31, sales: 31, reputation: 287 },
+  },
+];
+
+export const mockPurchases = [
+  { id: "pur-001", appId: "5", appName: "CodeReviewAI", price: 699, purchasedAt: "2026-03-10T10:00:00Z", deliveryUrl: "https://github.com/devstudio/codereviewai-delivery" },
+  { id: "pur-002", appId: "3", appName: "TableSync", price: 599, purchasedAt: "2026-02-28T14:00:00Z", deliveryUrl: "https://github.com/jameswu/tablesync-delivery" },
+];
+
 export const bounties: Bounty[] = [
   {
     id: "1",

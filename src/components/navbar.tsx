@@ -14,6 +14,7 @@ export function Navbar() {
     { href: "/marketplace", label: "Marketplace" },
     { href: "/hunters", label: "Hunters" },
     { href: "/sell", label: "Sell" },
+    { href: "/community", label: "Community" },
   ];
 
   return (
@@ -37,7 +38,7 @@ export function Navbar() {
                 href={link.href}
                 className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                   pathname.startsWith(link.href)
-                    ? "text-white bg-black/[0.05]"
+                    ? "text-[#111] bg-black/[0.05] font-medium"
                     : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
                 }`}
               >
@@ -59,12 +60,11 @@ export function Navbar() {
               </svg>
             </button>
           </Link>
-          <Button
-            size="sm"
-            className="hidden bg-accent text-white hover:bg-accent/90 md:inline-flex"
-          >
-            Sign in
-          </Button>
+          <Link href="/profile" className="hidden md:block">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1D9E75]/15 text-xs font-bold text-[#1D9E75] hover:ring-2 hover:ring-[#1D9E75]/30 transition-all cursor-pointer">
+              AC
+            </div>
+          </Link>
           {/* Mobile hamburger */}
           <button
             className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors md:hidden"
@@ -95,7 +95,7 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={`rounded-md px-3 py-2 text-sm transition-colors ${
                   pathname.startsWith(link.href)
-                    ? "text-white bg-black/[0.05]"
+                    ? "text-[#111] bg-black/[0.05] font-medium"
                     : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
                 }`}
               >
@@ -107,17 +107,23 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
               className={`rounded-md px-3 py-2 text-sm transition-colors ${
                 pathname.startsWith("/dashboard")
-                  ? "text-white bg-black/[0.05]"
+                  ? "text-[#111] bg-black/[0.05] font-medium"
                   : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
               }`}
             >
               Dashboard
             </Link>
-            <div className="mt-3 pt-3 border-t border-black/[0.06]">
-              <Button size="sm" className="w-full bg-accent text-white hover:bg-accent/90">
-                Sign in
-              </Button>
-            </div>
+            <Link
+              href="/profile"
+              onClick={() => setMobileOpen(false)}
+              className={`rounded-md px-3 py-2 text-sm transition-colors ${
+                pathname.startsWith("/profile")
+                  ? "text-[#111] bg-black/[0.05] font-medium"
+                  : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04]"
+              }`}
+            >
+              Profile
+            </Link>
           </div>
         </div>
       )}

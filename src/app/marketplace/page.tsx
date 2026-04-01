@@ -202,7 +202,7 @@ export default function MarketplacePage() {
           {/* App Grid */}
           <div className="flex-1 min-w-0">
             <p className="mb-5 text-sm text-muted-foreground">
-              Showing <span className="text-white font-medium">{filteredApps.length}</span> apps
+              Showing <span className="text-[#111] font-medium">{filteredApps.length}</span> apps
             </p>
 
             {filteredApps.length === 0 ? (
