@@ -308,7 +308,7 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#f8f9fa]">
+    <div className="relative min-h-screen bg-[#f8f9fa]" style={{ scrollSnapType: "y proximity" }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
@@ -345,13 +345,10 @@ export default function MarketplacePage() {
       )}
 
       <main>
-        {/* Snap container — only Hero + How It Works snap, rest scrolls freely */}
-        <div style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y mandatory", WebkitOverflowScrolling: "touch" }}>
-
         {/* ══════════════════════════════
             HERO — Full viewport snap section
         ══════════════════════════════ */}
-        <section className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)", scrollSnapAlign: "start", scrollSnapStop: "always" }}>
+        <section className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)", scrollSnapAlign: "start" }}>
           <div className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
             1,200+ apps sold to happy customers 🎊
@@ -403,7 +400,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             HOW IT WORKS — Full viewport snap section
         ══════════════════════════════ */}
-        <section className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh", scrollSnapAlign: "start", scrollSnapStop: "always" }}>
+        <section className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh", scrollSnapAlign: "start" }}>
           <div className="w-full max-w-5xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
@@ -444,10 +441,8 @@ export default function MarketplacePage() {
           </div>
         </section>
 
-        </div>{/* end snap container */}
-
         {/* ══════════════════════════════
-            MAIN: SIDEBAR + GRID — normal scrolling from here
+            MAIN: SIDEBAR + GRID — no snap, free scroll
         ══════════════════════════════ */}
         <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
           <div className="flex gap-7">
