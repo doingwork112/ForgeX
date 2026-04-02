@@ -85,18 +85,50 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 function SectionCard({
   title,
   children,
+  editing,
+  onToggleEdit,
+  editChildren,
   className = "",
 }: {
   title: string;
   children: React.ReactNode;
+  editing?: boolean;
+  onToggleEdit?: () => void;
+  editChildren?: React.ReactNode;
   className?: string;
 }) {
   return (
     <div className={`rounded-2xl border border-black/[0.06] bg-white shadow-sm overflow-hidden ${className}`}>
-      <div className="px-6 py-4 border-b border-black/[0.04]">
+      <div className="px-6 py-4 border-b border-black/[0.04] flex items-center justify-between">
         <h2 className="text-sm font-semibold text-[#111]">{title}</h2>
+        {onToggleEdit && (
+          <button
+            onClick={onToggleEdit}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+              editing
+                ? "bg-[#1D9E75]/10 text-[#1D9E75] border border-[#1D9E75]/20"
+                : "text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] border border-transparent"
+            }`}
+          >
+            {editing ? (
+              <>
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                Done
+              </>
+            ) : (
+              <>
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Edit
+              </>
+            )}
+          </button>
+        )}
       </div>
-      <div className="px-6 py-5">{children}</div>
+      <div className="px-6 py-5">{editing && editChildren ? editChildren : children}</div>
     </div>
   );
 }
@@ -134,6 +166,14 @@ export default function ProfileSettingsPage() {
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [accentColor, setAccentColor] = useState("#1D9E75");
+
+  // Per-section editing state
+  const [editingBanner, setEditingBanner] = useState(false);
+  const [editingAvatar, setEditingAvatar] = useState(false);
+  const [editingInfo, setEditingInfo] = useState(false);
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [editingSocial, setEditingSocial] = useState(false);
+  const [editingAccent, setEditingAccent] = useState(false);
 
   // Upload refs
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -382,92 +422,136 @@ export default function ProfileSettingsPage() {
           {/* ============================================================ */}
           {/*  1. BANNER SECTION                                           */}
           {/* ============================================================ */}
-          <SectionCard title="Banner">
-            {/* Current banner preview */}
-            <div className="relative group mb-5">
-              <div
-                className="h-36 w-full rounded-2xl overflow-hidden"
-                style={
-                  bannerUrl
-                    ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-                    : { background: bannerColor }
-                }
-              />
-              <button
-                onClick={() => bannerInputRef.current?.click()}
-                className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/0 group-hover:bg-black/30 transition-all opacity-0 group-hover:opacity-100"
-              >
-                <span className="rounded-xl bg-white/90 px-4 py-2 text-sm font-medium text-[#111] shadow-sm">
-                  Upload banner image
-                </span>
-              </button>
-              <input
-                ref={bannerInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleBannerUpload}
-              />
-            </div>
+          <SectionCard
+            title="Banner"
+            editing={editingBanner}
+            onToggleEdit={() => setEditingBanner(!editingBanner)}
+            editChildren={
+              <>
+                {/* Banner preview with upload */}
+                <div className="relative group mb-5">
+                  <div
+                    className="h-36 w-full rounded-2xl overflow-hidden"
+                    style={
+                      bannerUrl
+                        ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                        : { background: bannerColor }
+                    }
+                  />
+                  <button
+                    onClick={() => bannerInputRef.current?.click()}
+                    className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/0 group-hover:bg-black/30 transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <span className="rounded-xl bg-white/90 px-4 py-2 text-sm font-medium text-[#111] shadow-sm">
+                      Upload banner image
+                    </span>
+                  </button>
+                  <input
+                    ref={bannerInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleBannerUpload}
+                  />
+                </div>
 
-            {/* Gradient presets */}
-            <FieldLabel>Or choose a gradient</FieldLabel>
-            <div className="flex flex-wrap gap-2">
-              {PRESET_GRADIENTS.map((g) => (
-                <button
-                  key={g}
-                  onClick={() => selectGradient(g)}
-                  className={`h-8 w-12 rounded-lg transition-all ${
-                    !bannerUrl && bannerColor === g
-                      ? "ring-2 ring-[#1D9E75] ring-offset-2"
-                      : "hover:ring-2 hover:ring-black/10 hover:ring-offset-1"
-                  }`}
-                  style={{ background: g }}
-                  title="Select gradient"
-                />
-              ))}
-            </div>
+                {/* Gradient presets */}
+                <FieldLabel>Or choose a gradient</FieldLabel>
+                <div className="flex flex-wrap gap-2">
+                  {PRESET_GRADIENTS.map((g) => (
+                    <button
+                      key={g}
+                      onClick={() => selectGradient(g)}
+                      className={`h-8 w-12 rounded-lg transition-all ${
+                        !bannerUrl && bannerColor === g
+                          ? "ring-2 ring-[#1D9E75] ring-offset-2"
+                          : "hover:ring-2 hover:ring-black/10 hover:ring-offset-1"
+                      }`}
+                      style={{ background: g }}
+                      title="Select gradient"
+                    />
+                  ))}
+                </div>
+              </>
+            }
+          >
+            {/* Display view — just the banner preview */}
+            <div
+              className="h-36 w-full rounded-2xl overflow-hidden"
+              style={
+                bannerUrl
+                  ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                  : { background: bannerColor }
+              }
+            />
           </SectionCard>
 
           {/* ============================================================ */}
           {/*  2. AVATAR SECTION                                           */}
           {/* ============================================================ */}
-          <SectionCard title="Avatar">
-            <div className="flex items-center gap-5">
-              <div className="relative group">
-                <div
-                  className="h-20 w-20 rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden text-xl font-bold"
-                  style={{
-                    backgroundColor: avatarUrl ? undefined : `${accentColor}20`,
-                    color: avatarUrl ? undefined : accentColor,
-                  }}
-                >
-                  {avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
-                  ) : (
-                    initials
-                  )}
+          <SectionCard
+            title="Avatar"
+            editing={editingAvatar}
+            onToggleEdit={() => setEditingAvatar(!editingAvatar)}
+            editChildren={
+              <div className="flex items-center gap-5">
+                <div className="relative group">
+                  <div
+                    className="h-20 w-20 rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden text-xl font-bold"
+                    style={{
+                      backgroundColor: avatarUrl ? undefined : `${accentColor}20`,
+                      color: avatarUrl ? undefined : accentColor,
+                    }}
+                  >
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                    ) : (
+                      initials
+                    )}
+                  </div>
+                  <button
+                    onClick={() => avatarInputRef.current?.click()}
+                    className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 group-hover:bg-black/30 transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                      <path d="M12 4a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6V5a1 1 0 011-1z" />
+                    </svg>
+                  </button>
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
                 </div>
-                <button
-                  onClick={() => avatarInputRef.current?.click()}
-                  className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 group-hover:bg-black/30 transition-all opacity-0 group-hover:opacity-100"
-                >
-                  <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
-                    <path d="M12 4a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6V5a1 1 0 011-1z" />
-                  </svg>
-                </button>
-                <input
-                  ref={avatarInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                />
+                <div className="text-sm text-muted-foreground">
+                  <p>Click the avatar to upload a new image.</p>
+                  <p className="text-xs mt-0.5">Recommended: 256x256px, JPG or PNG</p>
+                </div>
               </div>
-              <div className="text-sm text-muted-foreground">
-                <p>Click to upload a new avatar.</p>
-                <p className="text-xs mt-0.5">Recommended: 256x256px, JPG or PNG</p>
+            }
+          >
+            {/* Display view — just show the avatar */}
+            <div className="flex items-center gap-4">
+              <div
+                className="h-20 w-20 rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden text-xl font-bold"
+                style={{
+                  backgroundColor: avatarUrl ? undefined : `${accentColor}20`,
+                  color: avatarUrl ? undefined : accentColor,
+                }}
+              >
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  initials
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[#111]">{displayName || "No name set"}</p>
+                <p className="text-xs text-muted-foreground">Click Edit to change your avatar</p>
               </div>
             </div>
           </SectionCard>
@@ -475,257 +559,373 @@ export default function ProfileSettingsPage() {
           {/* ============================================================ */}
           {/*  3. BASIC INFO                                               */}
           {/* ============================================================ */}
-          <SectionCard title="Basic Info">
-            <div className="space-y-5">
-              {/* Display name */}
-              <div>
-                <FieldLabel>Display name</FieldLabel>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  onBlur={() => updateProfile({ display_name: displayName || null })}
-                  placeholder="Your name"
-                  className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
-                />
-              </div>
+          <SectionCard
+            title="Basic Info"
+            editing={editingInfo}
+            onToggleEdit={() => {
+              if (editingInfo) {
+                // Save on close
+                updateProfile({
+                  display_name: displayName || null,
+                  username,
+                  bio: bio || null,
+                  role,
+                });
+              }
+              setEditingInfo(!editingInfo);
+            }}
+            editChildren={
+              <div className="space-y-5">
+                {/* Display name */}
+                <div>
+                  <FieldLabel>Display name</FieldLabel>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
+                  />
+                </div>
 
-              {/* Username */}
-              <div>
-                <FieldLabel>Username</FieldLabel>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-1 items-center rounded-xl border border-black/[0.08] bg-white overflow-hidden focus-within:border-[#1D9E75]/50 focus-within:ring-2 focus-within:ring-[#1D9E75]/10 transition-all">
-                    <span className="pl-4 text-sm text-muted-foreground/60 select-none">@</span>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
-                      onBlur={() => updateProfile({ username })}
-                      placeholder="username"
-                      className="flex-1 bg-transparent px-1 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:outline-none"
-                    />
+                {/* Username */}
+                <div>
+                  <FieldLabel>Username</FieldLabel>
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-1 items-center rounded-xl border border-black/[0.08] bg-white overflow-hidden focus-within:border-[#1D9E75]/50 focus-within:ring-2 focus-within:ring-[#1D9E75]/10 transition-all">
+                      <span className="pl-4 text-sm text-muted-foreground/60 select-none">@</span>
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+                        placeholder="username"
+                        className="flex-1 bg-transparent px-1 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:outline-none"
+                      />
+                    </div>
                   </div>
+                  {username && (
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      forgex.com/u/{username}
+                    </p>
+                  )}
                 </div>
-                {username && (
-                  <p className="mt-1.5 text-xs text-muted-foreground">
-                    forgex.com/u/{username}
-                  </p>
-                )}
-              </div>
 
-              {/* Bio */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <FieldLabel>Bio</FieldLabel>
-                  <span
-                    className={`text-xs ${
-                      bio.length > 200 ? "text-red-500 font-medium" : "text-muted-foreground"
-                    }`}
-                  >
-                    {bio.length}/200
-                  </span>
-                </div>
-                <textarea
-                  value={bio}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 200) setBio(e.target.value);
-                  }}
-                  onBlur={() => updateProfile({ bio: bio || null })}
-                  rows={3}
-                  placeholder="Tell people about yourself..."
-                  className="w-full resize-none rounded-xl border border-black/[0.08] bg-white px-4 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
-                />
-              </div>
-
-              {/* Role */}
-              <div>
-                <FieldLabel>Role</FieldLabel>
-                <div className="grid grid-cols-3 gap-3">
-                  {ROLES.map((r) => (
-                    <button
-                      key={r.value}
-                      onClick={() => {
-                        setRole(r.value);
-                        updateProfile({ role: r.value });
-                      }}
-                      className={`rounded-xl border px-4 py-3 text-left transition-all ${
-                        role === r.value
-                          ? "border-[#1D9E75] bg-[#1D9E75]/5 ring-1 ring-[#1D9E75]/20"
-                          : "border-black/[0.08] bg-white hover:border-black/[0.15]"
+                {/* Bio */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <FieldLabel>Bio</FieldLabel>
+                    <span
+                      className={`text-xs ${
+                        bio.length > 200 ? "text-red-500 font-medium" : "text-muted-foreground"
                       }`}
                     >
-                      <p
-                        className={`text-sm font-medium ${
-                          role === r.value ? "text-[#1D9E75]" : "text-[#111]"
+                      {bio.length}/200
+                    </span>
+                  </div>
+                  <textarea
+                    value={bio}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 200) setBio(e.target.value);
+                    }}
+                    rows={3}
+                    placeholder="Tell people about yourself..."
+                    className="w-full resize-none rounded-xl border border-black/[0.08] bg-white px-4 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
+                  />
+                </div>
+
+                {/* Role */}
+                <div>
+                  <FieldLabel>Role</FieldLabel>
+                  <div className="grid grid-cols-3 gap-3">
+                    {ROLES.map((r) => (
+                      <button
+                        key={r.value}
+                        onClick={() => setRole(r.value)}
+                        className={`rounded-xl border px-4 py-3 text-left transition-all ${
+                          role === r.value
+                            ? "border-[#1D9E75] bg-[#1D9E75]/5 ring-1 ring-[#1D9E75]/20"
+                            : "border-black/[0.08] bg-white hover:border-black/[0.15]"
                         }`}
                       >
-                        {r.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{r.desc}</p>
-                    </button>
-                  ))}
+                        <p
+                          className={`text-sm font-medium ${
+                            role === r.value ? "text-[#1D9E75]" : "text-[#111]"
+                          }`}
+                        >
+                          {r.label}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{r.desc}</p>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
+            }
+          >
+            {/* Display view */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <p className="text-base font-semibold text-[#111]">{displayName || <span className="text-muted-foreground italic">No name set</span>}</p>
+                <span
+                  className="rounded-lg px-2.5 py-0.5 text-xs font-medium"
+                  style={{
+                    backgroundColor: `${accentColor}10`,
+                    color: accentColor,
+                    border: `1px solid ${accentColor}30`,
+                  }}
+                >
+                  {role === "both" ? "Creator & Buyer" : role === "creator" ? "Creator" : "Buyer"}
+                </span>
+              </div>
+              {username && (
+                <p className="text-sm text-muted-foreground">@{username}</p>
+              )}
+              {bio ? (
+                <p className="text-sm text-[#333] leading-relaxed">{bio}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No bio yet</p>
+              )}
             </div>
           </SectionCard>
 
           {/* ============================================================ */}
           {/*  4. STATUS                                                   */}
           {/* ============================================================ */}
-          <SectionCard title="Status">
-            <div>
-              <FieldLabel>Currently building</FieldLabel>
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={currentlyBuilding}
-                  onChange={(e) => setCurrentlyBuilding(e.target.value)}
-                  onBlur={() => updateProfile({ currently_building: currentlyBuilding || null })}
-                  placeholder="What are you working on?"
-                  className="flex-1 rounded-xl border border-black/[0.08] bg-white px-4 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
-                />
-              </div>
-              {currentlyBuilding && (
-                <div className="mt-3">
-                  <p className="text-xs text-muted-foreground mb-1.5">Preview:</p>
-                  <span
-                    className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium"
-                    style={{
-                      borderColor: `${accentColor}30`,
-                      backgroundColor: `${accentColor}08`,
-                      color: accentColor,
-                    }}
-                  >
-                    Currently building: <strong>{currentlyBuilding}</strong>
-                  </span>
+          <SectionCard
+            title="Status"
+            editing={editingStatus}
+            onToggleEdit={() => {
+              if (editingStatus) {
+                updateProfile({ currently_building: currentlyBuilding || null });
+              }
+              setEditingStatus(!editingStatus);
+            }}
+            editChildren={
+              <div>
+                <FieldLabel>Currently building</FieldLabel>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={currentlyBuilding}
+                    onChange={(e) => setCurrentlyBuilding(e.target.value)}
+                    placeholder="What are you working on?"
+                    className="flex-1 rounded-xl border border-black/[0.08] bg-white px-4 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
+                  />
                 </div>
-              )}
-            </div>
+                {currentlyBuilding && (
+                  <div className="mt-3">
+                    <p className="text-xs text-muted-foreground mb-1.5">Preview:</p>
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium"
+                      style={{
+                        borderColor: `${accentColor}30`,
+                        backgroundColor: `${accentColor}08`,
+                        color: accentColor,
+                      }}
+                    >
+                      Currently building: <strong>{currentlyBuilding}</strong>
+                    </span>
+                  </div>
+                )}
+              </div>
+            }
+          >
+            {/* Display view */}
+            {currentlyBuilding ? (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium"
+                style={{
+                  borderColor: `${accentColor}30`,
+                  backgroundColor: `${accentColor}08`,
+                  color: accentColor,
+                }}
+              >
+                Currently building: <strong>{currentlyBuilding}</strong>
+              </span>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No status set</p>
+            )}
           </SectionCard>
 
           {/* ============================================================ */}
           {/*  5. SOCIAL LINKS                                             */}
           {/* ============================================================ */}
-          <SectionCard title="Social Links">
-            <div className="space-y-4">
-              {/* Website */}
-              <div>
-                <FieldLabel>Website</FieldLabel>
-                <div className="flex items-center rounded-xl border border-black/[0.08] bg-white overflow-hidden focus-within:border-[#1D9E75]/50 focus-within:ring-2 focus-within:ring-[#1D9E75]/10 transition-all">
-                  <span className="pl-4 text-sm text-muted-foreground/60 select-none">
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                    </svg>
-                  </span>
-                  <input
-                    type="url"
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                    onBlur={() => updateProfile({ website: website || null })}
-                    placeholder="https://yoursite.com"
-                    className="flex-1 bg-transparent px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:outline-none"
-                  />
+          <SectionCard
+            title="Social Links"
+            editing={editingSocial}
+            onToggleEdit={() => {
+              if (editingSocial) {
+                updateProfile({ website: website || null, twitter: twitter || null });
+              }
+              setEditingSocial(!editingSocial);
+            }}
+            editChildren={
+              <div className="space-y-4">
+                {/* Website */}
+                <div>
+                  <FieldLabel>Website</FieldLabel>
+                  <div className="flex items-center rounded-xl border border-black/[0.08] bg-white overflow-hidden focus-within:border-[#1D9E75]/50 focus-within:ring-2 focus-within:ring-[#1D9E75]/10 transition-all">
+                    <span className="pl-4 text-sm text-muted-foreground/60 select-none">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      </svg>
+                    </span>
+                    <input
+                      type="url"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      placeholder="https://yoursite.com"
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:outline-none"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Twitter */}
-              <div>
-                <FieldLabel>Twitter / X</FieldLabel>
-                <div className="flex items-center rounded-xl border border-black/[0.08] bg-white overflow-hidden focus-within:border-[#1D9E75]/50 focus-within:ring-2 focus-within:ring-[#1D9E75]/10 transition-all">
-                  <span className="pl-4 text-sm text-muted-foreground/60 select-none">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
-                  </span>
-                  <input
-                    type="text"
-                    value={twitter}
-                    onChange={(e) => setTwitter(e.target.value.replace("@", ""))}
-                    onBlur={() => updateProfile({ twitter: twitter || null })}
-                    placeholder="handle"
-                    className="flex-1 bg-transparent px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:outline-none"
-                  />
+                {/* Twitter */}
+                <div>
+                  <FieldLabel>Twitter / X</FieldLabel>
+                  <div className="flex items-center rounded-xl border border-black/[0.08] bg-white overflow-hidden focus-within:border-[#1D9E75]/50 focus-within:ring-2 focus-within:ring-[#1D9E75]/10 transition-all">
+                    <span className="pl-4 text-sm text-muted-foreground/60 select-none">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </span>
+                    <input
+                      type="text"
+                      value={twitter}
+                      onChange={(e) => setTwitter(e.target.value.replace("@", ""))}
+                      placeholder="handle"
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground/50 focus:outline-none"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* GitHub (read-only from OAuth) */}
-              <div>
-                <FieldLabel>GitHub</FieldLabel>
-                <div className="flex items-center rounded-xl border border-black/[0.08] bg-black/[0.02] overflow-hidden">
-                  <span className="pl-4 text-sm text-muted-foreground/60 select-none">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                  </span>
-                  <input
-                    type="text"
-                    value={user?.user_metadata?.user_name ?? ""}
-                    readOnly
-                    placeholder="Connected via OAuth"
-                    className="flex-1 bg-transparent px-3 py-2.5 text-sm text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none cursor-default"
-                  />
+                {/* GitHub (read-only from OAuth) */}
+                <div>
+                  <FieldLabel>GitHub</FieldLabel>
+                  <div className="flex items-center rounded-xl border border-black/[0.08] bg-black/[0.02] overflow-hidden">
+                    <span className="pl-4 text-sm text-muted-foreground/60 select-none">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                      </svg>
+                    </span>
+                    <input
+                      type="text"
+                      value={user?.user_metadata?.user_name ?? ""}
+                      readOnly
+                      placeholder="Connected via OAuth"
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm text-muted-foreground placeholder:text-muted-foreground/50 focus:outline-none cursor-default"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Automatically detected from your login provider.
+                  </p>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Automatically detected from your login provider.
-                </p>
               </div>
+            }
+          >
+            {/* Display view */}
+            <div className="space-y-2.5">
+              {website ? (
+                <div className="flex items-center gap-2.5 text-sm">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="text-muted-foreground shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  </svg>
+                  <a href={website} target="_blank" rel="noopener noreferrer" className="text-[#1D9E75] hover:underline truncate">{website}</a>
+                </div>
+              ) : null}
+              {twitter ? (
+                <div className="flex items-center gap-2.5 text-sm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-muted-foreground shrink-0">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                  <a href={`https://x.com/${twitter}`} target="_blank" rel="noopener noreferrer" className="text-[#1D9E75] hover:underline">@{twitter}</a>
+                </div>
+              ) : null}
+              {user?.user_metadata?.user_name ? (
+                <div className="flex items-center gap-2.5 text-sm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-muted-foreground shrink-0">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                  <a href={`https://github.com/${user.user_metadata.user_name}`} target="_blank" rel="noopener noreferrer" className="text-[#1D9E75] hover:underline">{user.user_metadata.user_name}</a>
+                </div>
+              ) : null}
+              {!website && !twitter && !user?.user_metadata?.user_name && (
+                <p className="text-sm text-muted-foreground italic">No links added yet</p>
+              )}
             </div>
           </SectionCard>
 
           {/* ============================================================ */}
           {/*  6. ACCENT COLOR                                             */}
           {/* ============================================================ */}
-          <SectionCard title="Profile Accent Color">
-            <div>
-              <FieldLabel>Pick a color for your profile accents</FieldLabel>
-              <div className="flex flex-wrap gap-2.5 mt-1">
-                {PRESET_ACCENTS.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => {
-                      setAccentColor(c);
-                      // accent_color not in DB schema, so this is local-only / cosmetic
-                    }}
-                    className={`h-9 w-9 rounded-full transition-all ${
-                      accentColor === c
-                        ? "ring-2 ring-offset-2"
-                        : "hover:ring-2 hover:ring-offset-1 hover:ring-black/10"
-                    }`}
-                    style={{
-                      backgroundColor: c,
-                      ...(accentColor === c ? { outline: `2px solid ${c}`, outlineOffset: "2px" } : {}),
-                    }}
-                    title={c}
-                  />
-                ))}
-              </div>
-              {/* Preview */}
-              <div className="mt-4 p-4 rounded-xl border border-black/[0.06] bg-black/[0.01]">
-                <p className="text-xs text-muted-foreground mb-2">Preview</p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                    style={{ backgroundColor: accentColor }}
-                  >
-                    {initials}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#111]">{displayName || "Your Name"}</p>
-                    <p className="text-xs" style={{ color: accentColor }}>
-                      @{username || "username"}
-                    </p>
-                  </div>
-                  <span
-                    className="ml-auto rounded-lg px-3 py-1 text-xs font-medium"
-                    style={{
-                      backgroundColor: `${accentColor}10`,
-                      color: accentColor,
-                      border: `1px solid ${accentColor}30`,
-                    }}
-                  >
-                    {role === "both" ? "Creator & Buyer" : role === "creator" ? "Creator" : "Buyer"}
-                  </span>
+          <SectionCard
+            title="Profile Accent Color"
+            editing={editingAccent}
+            onToggleEdit={() => setEditingAccent(!editingAccent)}
+            editChildren={
+              <div>
+                <FieldLabel>Pick a color for your profile accents</FieldLabel>
+                <div className="flex flex-wrap gap-2.5 mt-1">
+                  {PRESET_ACCENTS.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setAccentColor(c);
+                        // accent_color not in DB schema, so this is local-only / cosmetic
+                      }}
+                      className={`h-9 w-9 rounded-full transition-all ${
+                        accentColor === c
+                          ? "ring-2 ring-offset-2"
+                          : "hover:ring-2 hover:ring-offset-1 hover:ring-black/10"
+                      }`}
+                      style={{
+                        backgroundColor: c,
+                        ...(accentColor === c ? { outline: `2px solid ${c}`, outlineOffset: "2px" } : {}),
+                      }}
+                      title={c}
+                    />
+                  ))}
                 </div>
+                {/* Preview */}
+                <div className="mt-4 p-4 rounded-xl border border-black/[0.06] bg-black/[0.01]">
+                  <p className="text-xs text-muted-foreground mb-2">Preview</p>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                      style={{ backgroundColor: accentColor }}
+                    >
+                      {initials}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#111]">{displayName || "Your Name"}</p>
+                      <p className="text-xs" style={{ color: accentColor }}>
+                        @{username || "username"}
+                      </p>
+                    </div>
+                    <span
+                      className="ml-auto rounded-lg px-3 py-1 text-xs font-medium"
+                      style={{
+                        backgroundColor: `${accentColor}10`,
+                        color: accentColor,
+                        border: `1px solid ${accentColor}30`,
+                      }}
+                    >
+                      {role === "both" ? "Creator & Buyer" : role === "creator" ? "Creator" : "Buyer"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
+          >
+            {/* Display view — show current color swatch + mini preview */}
+            <div className="flex items-center gap-4">
+              <div
+                className="h-10 w-10 rounded-full shrink-0"
+                style={{ backgroundColor: accentColor }}
+              />
+              <div>
+                <p className="text-sm font-medium text-[#111]">{accentColor}</p>
+                <p className="text-xs text-muted-foreground">Current accent color</p>
               </div>
             </div>
           </SectionCard>
