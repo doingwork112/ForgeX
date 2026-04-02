@@ -308,7 +308,7 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#f8f9fa]">
+    <div className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y mandatory", scrollBehavior: "smooth" }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
@@ -346,9 +346,9 @@ export default function MarketplacePage() {
 
       <main>
         {/* ══════════════════════════════
-            HERO
+            HERO — Full viewport snap section
         ══════════════════════════════ */}
-        <section className="relative px-6 pt-14 pb-8 text-center">
+        <section className="relative flex flex-col items-center justify-center px-6 text-center" style={{ minHeight: "calc(100vh - 57px)", scrollSnapAlign: "start" }}>
           <div className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
             1,200+ apps sold to happy customers 🎊
@@ -387,33 +387,56 @@ export default function MarketplacePage() {
               placeholder="Search: invoicing, booking, fitness, restaurant, campus..."
               className="w-full rounded-2xl border border-black/[0.08] bg-white pl-12 pr-4 py-3.5 text-sm text-[#111] placeholder:text-muted-foreground shadow-sm focus:border-[#1D9E75]/50 focus:outline-none transition-colors" />
           </div>
+
+          {/* Scroll down indicator */}
+          <div className="mt-8 flex flex-col items-center gap-1 animate-bounce text-gray-400">
+            <span className="text-xs font-medium">Scroll</span>
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
         </section>
 
         {/* ══════════════════════════════
-            HOW IT WORKS — horizontal strip
+            HOW IT WORKS — Full viewport snap section
         ══════════════════════════════ */}
-        <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
-          <div className="rounded-3xl border border-black/[0.06] bg-white p-5 sm:p-6 shadow-sm">
-            <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-5">How It Works 👇</p>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <section className="flex items-center justify-center px-4 sm:px-6" style={{ minHeight: "100vh", scrollSnapAlign: "start" }}>
+          <div className="w-full max-w-5xl mx-auto">
+            <div className="text-center mb-10">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
+                How It Works
+              </span>
+              <h2 className="text-3xl font-black text-[#111] md:text-4xl">Four simple steps to your own app</h2>
+              <p className="text-base text-gray-500 mt-3 max-w-lg mx-auto">No coding, no risk. Try first, pay later.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
               {[
-                { step: "01", icon: "🎮", title: "Try Free PWA", desc: "No signup, no payment required" },
-                { step: "02", icon: "💰", title: "Pay 40% Deposit", desc: "Only pay when you're satisfied" },
-                { step: "03", icon: "🛠️", title: "Developer Customizes", desc: "Logo, colors, content — all yours" },
-                { step: "04", icon: "🎉", title: "Review & Pay Balance", desc: "Happy? Pay the rest. Not happy? Get refunded" },
-              ].map(({ step, icon, title, desc }, i) => (
-                <div key={step} className="relative flex flex-col items-center text-center gap-2">
+                { icon: "🎮", title: "Try Free PWA", desc: "No signup, no payment required. Open the demo and explore every feature." },
+                { icon: "💰", title: "Pay 40% Deposit", desc: "Only pay when you love it. Deposit held safely in escrow." },
+                { icon: "🛠️", title: "Developer Customizes", desc: "Logo, colors, content — all yours. Delivered within 24 hours." },
+                { icon: "🎉", title: "Review & Pay Balance", desc: "Happy? Pay the rest. Not happy? Get your deposit refunded." },
+              ].map(({ icon, title, desc }, i) => (
+                <div key={title} className="relative flex flex-col items-center text-center gap-4">
                   {i < 3 && (
-                    <div className="absolute right-0 top-5 hidden h-px w-1/2 translate-x-1/2 border-t-2 border-dashed border-[#1D9E75]/25 sm:block" />
+                    <div className="absolute right-0 top-8 hidden h-px w-1/2 translate-x-1/2 border-t-2 border-dashed border-[#1D9E75]/25 sm:block" />
                   )}
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1D9E75]/10 text-2xl">
+                  <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1D9E75]/10 text-3xl shadow-sm">
                     {icon}
-                    <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#1D9E75] text-[10px] font-black text-white">{i + 1}</span>
+                    <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#1D9E75] text-xs font-black text-white shadow">{i + 1}</span>
                   </div>
-                  <p className="text-sm font-bold text-[#111]">{title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+                  <p className="text-base font-bold text-[#111]">{title}</p>
+                  <p className="text-sm text-gray-500 leading-relaxed max-w-[200px]">{desc}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Scroll hint */}
+            <div className="mt-10 flex flex-col items-center gap-1 animate-bounce text-gray-400">
+              <span className="text-xs font-medium">Browse Apps</span>
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
             </div>
           </div>
         </section>
@@ -421,7 +444,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             MAIN: SIDEBAR + GRID
         ══════════════════════════════ */}
-        <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10" style={{ scrollSnapAlign: "start" }}>
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
