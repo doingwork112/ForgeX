@@ -1,7 +1,7 @@
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-// Redirect to a client-side page that handles the code exchange
-// This ensures the browser's Supabase client handles the session
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
@@ -15,11 +15,37 @@ export async function GET(request: NextRequest) {
   }
 
   if (code) {
-    // Pass the code to a client-side page for exchange
-    return NextResponse.redirect(
-      new URL(`/auth/confirm?code=${code}`, requestUrl.origin)
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+              });
+            } catch {
+              // May fail in certain contexts, but cookies will still be set
+              // via the middleware on the next request
+            }
+          },
+        },
+      }
     );
+
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (exchangeError) {
+      return NextResponse.redirect(
+        new URL(`/auth/login?error=${encodeURIComponent(exchangeError.message)}`, requestUrl.origin)
+      );
+    }
   }
 
-  return NextResponse.redirect(new URL("/auth/login", requestUrl.origin));
+  return NextResponse.redirect(new URL("/marketplace", requestUrl.origin));
 }

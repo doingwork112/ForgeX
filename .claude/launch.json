@@ -3,11 +3,11 @@
   "configurations": [
     {
       "name": "forgex-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "/Users/boyudeng/Desktop/Trade/forgex/start-dev.sh",
+      "runtimeArgs": [],
       "cwd": "/Users/boyudeng/Desktop/Trade/forgex",
       "port": 3000,
-      "autoPort": true
+      "autoPort": false
     }
   ]
 }
