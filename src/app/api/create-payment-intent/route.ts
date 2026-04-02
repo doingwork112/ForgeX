@@ -7,7 +7,7 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 export async function POST(req: NextRequest) {
   if (!stripeKey) {
     return NextResponse.json(
-      { error: "Stripe 未配置，请在 .env.local 中设置 STRIPE_SECRET_KEY" },
+      { error: "Stripe not configured. Set STRIPE_SECRET_KEY in .env.local" },
       { status: 500 }
     );
   }
@@ -16,21 +16,21 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { amount, appName, plan, currency = "cny" } = body as {
-      amount: number;   // amount in fen (分), e.g. 8000 = ¥80
+    const { amount, appName, plan, currency = "usd" } = body as {
+      amount: number;   // amount in cents, e.g. 2000 = $20
       appName: string;
       plan: "basic" | "custom";
       currency?: string;
     };
 
     if (!amount || amount < 100) {
-      return NextResponse.json({ error: "金额不合法" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
     // Create a PaymentIntent for the deposit amount
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,                     // in 分 (fen)
-      currency,                   // "cny"
+      amount,                     // in cents
+      currency,                   // "usd"
       automatic_payment_methods: { enabled: true },
       metadata: {
         appName,
@@ -38,12 +38,12 @@ export async function POST(req: NextRequest) {
         type: "deposit",          // 40% deposit
         platform: "ForgeX",
       },
-      description: `ForgeX 定金 — ${appName} (${plan === "basic" ? "基础版" : "定制版"})`,
+      description: `ForgeX Deposit — ${appName} (${plan === "basic" ? "Standard" : "Custom"})`,
     });
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "支付初始化失败";
+    const message = err instanceof Error ? err.message : "Payment initialization failed";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

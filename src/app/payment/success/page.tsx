@@ -30,24 +30,24 @@ function SuccessContent() {
         <div className="absolute inset-0 rounded-full bg-[#1D9E75]/5 animate-ping" style={{ animationDuration: "2s" }} />
       </div>
 
-      <h1 className="text-3xl font-black text-[#111] mb-3">定金支付成功！🎉</h1>
+      <h1 className="text-3xl font-black text-[#111] mb-3">Deposit Paid Successfully! 🎉</h1>
       <p className="text-muted-foreground max-w-md leading-relaxed mb-2">
-        开发者已收到通知，将在 <strong>24 小时内</strong>联系你确认需求，开始为你定制。
+        The developer has been notified and will reach out within <strong>24 hours</strong> to confirm your requirements.
       </p>
 
       {paymentIntent && (
         <p className="text-xs text-muted-foreground mb-6">
-          支付单号：<code className="rounded bg-black/[0.06] px-2 py-0.5 font-mono text-[11px]">{paymentIntent}</code>
+          Payment ID: <code className="rounded bg-black/[0.06] px-2 py-0.5 font-mono text-[11px]">{paymentIntent}</code>
         </p>
       )}
 
       {/* What happens next */}
       <div className="w-full max-w-sm rounded-3xl border border-black/[0.06] bg-white p-6 mb-8 text-left space-y-4">
-        <p className="text-sm font-bold text-[#111]">接下来会发生什么？</p>
+        <p className="text-sm font-bold text-[#111]">What happens next?</p>
         {[
-          { step: "24h 内", desc: "开发者联系你，确认需求细节", done: true },
-          { step: "3~7天", desc: "开发者做好 PWA，你可以体验试用", done: false },
-          { step: "验收满意", desc: "支付剩余尾款，获得完整源代码", done: false },
+          { step: "Within 24h", desc: "Developer contacts you to confirm details", done: true },
+          { step: "3-7 days", desc: "Developer builds your PWA for you to try", done: false },
+          { step: "Approval", desc: "Pay remaining balance and get full source code", done: false },
         ].map(({ step, desc, done }) => (
           <div key={step} className="flex items-start gap-3">
             <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${done ? "bg-[#1D9E75] text-white" : "border-2 border-black/[0.1] text-muted-foreground"}`}>
@@ -64,19 +64,19 @@ function SuccessContent() {
       <div className="flex flex-wrap gap-3 justify-center">
         <Link href="/marketplace">
           <button className="rounded-2xl bg-[#1D9E75] px-7 py-3 font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.25)]">
-            继续逛软件超市
+            Browse More Apps
           </button>
         </Link>
         <Link href="/profile">
           <button className="rounded-2xl border border-black/[0.1] bg-white px-7 py-3 font-semibold text-[#333] hover:border-black/[0.2] transition-colors">
-            查看我的订单
+            View My Orders
           </button>
         </Link>
       </div>
 
       {countdown > 0 && (
         <p className="mt-6 text-xs text-muted-foreground">
-          {countdown} 秒后自动跳转到首页
+          Redirecting in {countdown}s...
         </p>
       )}
     </div>
@@ -92,7 +92,7 @@ export default function PaymentSuccessPage() {
       <Navbar />
       <Suspense fallback={
         <div className="flex min-h-[70vh] items-center justify-center">
-          <div className="text-muted-foreground text-sm">加载中...</div>
+          <div className="text-muted-foreground text-sm">Loading...</div>
         </div>
       }>
         <SuccessContent />

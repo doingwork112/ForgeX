@@ -300,17 +300,17 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
         <div className="mt-16 rounded-3xl border border-black/[0.06] bg-white p-6 md:p-8 space-y-5">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h2 className="text-lg font-bold text-[#111]">给开发者留言 / 评价</h2>
+              <h2 className="text-lg font-bold text-[#111]">Leave a Review</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
-                你的反馈会直接发送给{" "}
+                Your feedback goes directly to{" "}
                 <Link href={`/u/${sellerUsername}`} className="text-[#1D9E75] hover:underline font-medium">
                   {app.seller.name}
                 </Link>
-                {" "}，帮助他改进产品
+                {" "}and helps improve their products
               </p>
             </div>
             <Link href={`/u/${sellerUsername}?tab=reviews`} className="text-xs text-[#1D9E75] hover:underline shrink-0">
-              查看全部评价 →
+              View all reviews →
             </Link>
           </div>
 
@@ -329,14 +329,14 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
               </button>
             ))}
             <span className="ml-2 text-sm text-muted-foreground">
-              {["", "很差", "较差", "一般", "不错", "非常棒"][feedbackRating]}
+              {["", "Terrible", "Poor", "Okay", "Good", "Amazing"][feedbackRating]}
             </span>
           </div>
 
           <textarea
             value={feedbackText}
             onChange={(e) => setFeedbackText(e.target.value)}
-            placeholder="分享你的使用体验，或者直接向开发者提问..."
+            placeholder="Share your experience or ask the developer a question..."
             rows={3}
             className="w-full resize-none rounded-2xl border border-black/[0.08] bg-[#f8f9fa] px-5 py-4 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none transition-colors"
           />
@@ -347,15 +347,15 @@ export default function AppDetailPage({ params }: { params: { id: string } }) {
               disabled={!feedbackText.trim()}
               className="rounded-2xl bg-[#1D9E75] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#1D9E75]/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              发送给开发者
+              Send to Developer
             </button>
-            <p className="text-xs text-muted-foreground">评价会公开显示在开发者主页</p>
+            <p className="text-xs text-muted-foreground">Reviews are public on the developer&apos;s profile</p>
           </div>
 
           {feedbackSent && (
             <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
               <span>✓</span>
-              <span>反馈已发送！开发者将会看到你的评价。</span>
+              <span>Feedback sent! The developer will see your review.</span>
             </div>
           )}
         </div>

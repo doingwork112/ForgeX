@@ -39,8 +39,8 @@ function DemoModal({ app, onClose, onBuy }: { app: ConsumerApp; onClose: () => v
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-black/[0.06] bg-white px-5 py-3.5">
           <div>
-            <p className="font-bold text-sm text-[#111]">{app.name} — 免费体验版 (PWA)</p>
-            <p className="text-xs text-muted-foreground">这是真实运行的演示，点击任意功能试试看 · 满意了再付款</p>
+            <p className="font-bold text-sm text-[#111]">{app.name} — Free Demo (PWA)</p>
+            <p className="text-xs text-muted-foreground">This is a live demo — try any feature · Pay only if you love it</p>
           </div>
           <div className="flex items-center gap-3">
             <a href={app.pwaDemoUrl} target="_blank" rel="noopener noreferrer"
@@ -48,7 +48,7 @@ function DemoModal({ app, onClose, onBuy }: { app: ConsumerApp; onClose: () => v
               <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
-              全屏打开
+              Full Screen
             </a>
             <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.05] hover:text-[#111] transition-colors text-lg">✕</button>
           </div>
@@ -63,27 +63,27 @@ function DemoModal({ app, onClose, onBuy }: { app: ConsumerApp; onClose: () => v
           <div className="flex flex-1 flex-col items-center justify-center gap-5 px-8 text-center">
             <span className="text-5xl">🔒</span>
             <div>
-              <p className="text-base font-bold text-[#111]">该演示不支持直接嵌入</p>
-              <p className="text-sm text-muted-foreground mt-1">点击下方按钮在新窗口完整体验</p>
+              <p className="text-base font-bold text-[#111]">This demo doesn&apos;t support embedding</p>
+              <p className="text-sm text-muted-foreground mt-1">Click below to open the full experience</p>
             </div>
             <a href={app.pwaDemoUrl} target="_blank" rel="noopener noreferrer"
               className="rounded-2xl bg-[#1D9E75] px-8 py-3.5 font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.3)]">
-              打开完整体验 →
+              Open Full Demo →
             </a>
           </div>
         ) : (
-          <iframe src={app.demoUrl} className="flex-1 w-full" title={`${app.name} 体验版`}
+          <iframe src={app.demoUrl} className="flex-1 w-full" title={`${app.name} Demo`}
             onError={() => setIframeError(true)}
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
         )}
         {/* Footer CTA */}
         <div className="shrink-0 border-t border-black/[0.06] bg-gradient-to-r from-[#1D9E75]/[0.04] to-transparent px-5 py-3 flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold text-[#111]">体验满意？先付 <span className="text-[#1D9E75]">¥{app.deposit}</span> 定金，开发者立即开始为你定制</p>
-            <p className="text-[11px] text-muted-foreground">不满意可退定金，全程平台保障</p>
+            <p className="text-xs font-semibold text-[#111]">Love it? Pay <span className="text-[#1D9E75]">${app.deposit}</span> deposit to get started</p>
+            <p className="text-[11px] text-muted-foreground">Money-back guarantee · Platform protected</p>
           </div>
           <button onClick={() => { onClose(); onBuy(); }} className="shrink-0 rounded-2xl bg-[#1D9E75] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_2px_12px_rgba(29,158,117,0.3)]">
-            付定金 ¥{app.deposit} →
+            Pay ${app.deposit} Deposit →
           </button>
         </div>
       </div>
@@ -110,21 +110,21 @@ function PlanPickerModal({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-full max-w-md rounded-3xl border border-black/[0.1] bg-white p-7 shadow-2xl">
         <button onClick={onClose} className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.05] hover:text-[#111] text-lg">✕</button>
-        <h2 className="text-xl font-bold text-[#111] mb-1">选择购买方案</h2>
-        <p className="text-sm text-muted-foreground mb-5">先付 40% 定金，体验满意再付尾款</p>
+        <h2 className="text-xl font-bold text-[#111] mb-1">Choose Your Plan</h2>
+        <p className="text-sm text-muted-foreground mb-5">Pay 40% deposit now, rest after you&apos;re satisfied</p>
 
         <div className="space-y-3 mb-5">
           <button onClick={() => setPlan("basic")}
             className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${plan === "basic" ? "border-[#1D9E75] bg-[#1D9E75]/[0.04]" : "border-black/[0.08] hover:border-black/[0.15]"}`}>
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-bold text-sm text-[#111]">基础版</p>
-                <p className="text-xs text-muted-foreground mt-0.5">完整功能，直接可用</p>
-                <p className="text-xs text-muted-foreground">先付定金 <span className="font-semibold text-[#1D9E75]">¥{app.deposit}</span>，满意再付尾款 ¥{app.priceBasic - app.deposit}</p>
+                <p className="font-bold text-sm text-[#111]">Standard</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Full features, ready to use</p>
+                <p className="text-xs text-muted-foreground">Deposit: <span className="font-semibold text-[#1D9E75]">${app.deposit}</span> · Balance: ${app.priceBasic - app.deposit}</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-2xl font-bold text-[#1D9E75]">¥{app.priceBasic}</p>
-                <p className="text-[11px] text-muted-foreground">总价</p>
+                <p className="text-2xl font-bold text-[#1D9E75]">${app.priceBasic}</p>
+                <p className="text-[11px] text-muted-foreground">Total</p>
               </div>
             </div>
           </button>
@@ -134,14 +134,14 @@ function PlanPickerModal({
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-bold text-sm text-[#111]">定制版</p>
-                    <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">推荐</span>
+                    <p className="font-bold text-sm text-[#111]">Custom</p>
+                    <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">Popular</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">改 logo/配色，部署好直接用</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Custom branding, deployed and ready</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-2xl font-bold text-[#1D9E75]">¥{app.priceCustom}</p>
-                  <p className="text-[11px] text-muted-foreground">总价</p>
+                  <p className="text-2xl font-bold text-[#1D9E75]">${app.priceCustom}</p>
+                  <p className="text-[11px] text-muted-foreground">Total</p>
                 </div>
               </div>
             </button>
@@ -150,24 +150,24 @@ function PlanPickerModal({
 
         {plan === "custom" && (
           <div className="mb-4">
-            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">定制要求（选填）</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Customization notes (optional)</label>
             <textarea value={customNote} onChange={(e) => setCustomNote(e.target.value)}
-              placeholder="例如：帮我改成北京大学的 logo，加上我们学校的绿色配色..."
+              placeholder="e.g., Change the logo to my company brand, use our blue color scheme..."
               rows={2} className="w-full resize-none rounded-xl border border-black/[0.08] px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none" />
           </div>
         )}
 
         <div className="rounded-xl border border-black/[0.06] bg-[#f8f9fa] px-4 py-3 mb-5 space-y-1.5 text-xs text-muted-foreground">
-          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">①</span> 先付 40% 定金，开发者开始为你定制</p>
-          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">②</span> 体验 PWA 版 3~7 天，满意再付尾款</p>
-          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">③</span> 不满意可申请退定金，平台全程保障</p>
+          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">1.</span> Pay 40% deposit, developer starts customizing</p>
+          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">2.</span> Try the PWA for 3-7 days, pay balance when satisfied</p>
+          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">3.</span> Not satisfied? Request a deposit refund, platform protected</p>
         </div>
 
         <button onClick={() => onConfirm(plan)}
           className="w-full rounded-2xl bg-[#1D9E75] py-4 text-base font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.3)]">
-          确认方案，去支付定金 ¥{app.deposit} →
+          Confirm & Pay ${app.deposit} Deposit →
         </button>
-        <p className="text-center text-xs text-muted-foreground mt-3">支持微信支付 / 支付宝 / 银行卡</p>
+        <p className="text-center text-xs text-muted-foreground mt-3">Visa, Mastercard, Apple Pay accepted</p>
       </div>
     </div>
   );
@@ -190,7 +190,7 @@ function AppCard({ app, onTry, onBuy }: { app: ConsumerApp; onTry: () => void; o
           <button onClick={onTry}
             className="flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-[#111] hover:bg-gray-50 transition-colors shadow-xl">
             <span className="h-2 w-2 rounded-full bg-[#1D9E75] animate-pulse" />
-            免费体验 PWA
+            Try Free PWA
           </button>
         </div>
         {/* Badges */}
@@ -198,8 +198,8 @@ function AppCard({ app, onTry, onBuy }: { app: ConsumerApp; onTry: () => void; o
           <span className="rounded-full bg-white/95 backdrop-blur-sm px-2.5 py-1 text-xs font-semibold text-[#111] shadow-sm">{catLabel}</span>
         </div>
         <div className="absolute right-3 top-3 flex flex-col gap-1.5 items-end">
-          {isHot && <span className="rounded-full bg-orange-500 px-2.5 py-1 text-[11px] font-bold text-white shadow">🔥 热卖</span>}
-          {isNew && <span className="rounded-full bg-blue-500 px-2.5 py-1 text-[11px] font-bold text-white shadow">✨ 新品</span>}
+          {isHot && <span className="rounded-full bg-orange-500 px-2.5 py-1 text-[11px] font-bold text-white shadow">🔥 Hot</span>}
+          {isNew && <span className="rounded-full bg-blue-500 px-2.5 py-1 text-[11px] font-bold text-white shadow">✨ New</span>}
         </div>
       </div>
 
@@ -224,19 +224,19 @@ function AppCard({ app, onTry, onBuy }: { app: ConsumerApp; onTry: () => void; o
           <StarRating rating={app.rating} />
           <span className="font-semibold text-[#111]">{app.rating}</span>
           <span>·</span>
-          <span>已售 {app.sold} 份</span>
+          <span>{app.sold} sold</span>
         </div>
 
         {/* Price */}
         <div className="rounded-2xl border border-[#1D9E75]/15 bg-gradient-to-r from-[#1D9E75]/[0.04] to-transparent p-3">
           <div className="flex items-baseline justify-between">
             <div>
-              <span className="text-2xl font-black text-[#1D9E75]">¥{app.priceBasic}</span>
-              {app.priceCustom && <span className="text-xs text-muted-foreground ml-1">起</span>}
+              <span className="text-2xl font-black text-[#1D9E75]">${app.priceBasic}</span>
+              {app.priceCustom && <span className="text-xs text-muted-foreground ml-1">+</span>}
             </div>
             <div className="text-right">
-              <p className="text-xs font-semibold text-orange-600">定金仅 ¥{app.deposit}</p>
-              <p className="text-[10px] text-muted-foreground">先体验再付尾款</p>
+              <p className="text-xs font-semibold text-orange-600">Deposit: ${app.deposit}</p>
+              <p className="text-[10px] text-muted-foreground">Try before you pay the rest</p>
             </div>
           </div>
         </div>
@@ -246,11 +246,11 @@ function AppCard({ app, onTry, onBuy }: { app: ConsumerApp; onTry: () => void; o
           <button onClick={onTry}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border-2 border-[#1D9E75]/30 py-2.5 text-sm font-bold text-[#1D9E75] hover:border-[#1D9E75] hover:bg-[#1D9E75]/5 transition-all">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
-            免费试用
+            Try Free
           </button>
           <button onClick={onBuy}
             className="flex flex-1 items-center justify-center rounded-2xl bg-[#1D9E75] py-2.5 text-sm font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_2px_12px_rgba(29,158,117,0.25)]">
-            付定金 ¥{app.deposit}
+            Deposit ${app.deposit}
           </button>
         </div>
       </div>
@@ -327,8 +327,8 @@ export default function MarketplacePage() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/20 bg-white px-6 py-4 shadow-[0_8px_40px_rgba(0,0,0,0.15)] animate-fade-up">
           <span className="text-2xl">🎉</span>
           <div>
-            <p className="text-sm font-bold text-[#111]">定金支付成功！</p>
-            <p className="text-xs text-muted-foreground">开发者已收到通知，将在 24h 内联系你</p>
+            <p className="text-sm font-bold text-[#111]">Deposit paid successfully!</p>
+            <p className="text-xs text-muted-foreground">The developer has been notified and will reach out within 24h</p>
           </div>
         </div>
       )}
@@ -338,8 +338,8 @@ export default function MarketplacePage() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/20 bg-white px-6 py-4 shadow-[0_8px_40px_rgba(0,0,0,0.15)] animate-fade-up">
           <span className="text-2xl">🚀</span>
           <div>
-            <p className="text-sm font-bold text-[#111]">需求发布成功！</p>
-            <p className="text-xs text-muted-foreground">程序员们马上就能看到，等候报价中...</p>
+            <p className="text-sm font-bold text-[#111]">Request posted!</p>
+            <p className="text-xs text-muted-foreground">Developers can see it now, waiting for quotes...</p>
           </div>
         </div>
       )}
@@ -351,26 +351,26 @@ export default function MarketplacePage() {
         <section className="relative px-6 pt-14 pb-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
-            1200+ 人已经买到自己的 App 🎊
+            1,200+ apps sold to happy customers 🎊
           </div>
 
           <h1 className="mx-auto max-w-3xl text-4xl font-black leading-tight tracking-tight text-[#111] md:text-5xl">
-            不想编程？直接买现成 App！
+            Don&apos;t Code? Buy Ready-Made Apps!
             <br />
-            <span className="text-[#1D9E75]">先免费体验，满意再付款 ✨</span>
+            <span className="text-[#1D9E75]">Try Free, Pay Only If You Love It ✨</span>
           </h1>
 
           <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground leading-relaxed">
-            所有 App 都有免费 PWA 体验版 · 先试用 3~7 天 · 满意再付尾款 · 不满意退定金
+            Every app has a free PWA demo · Try for 3-7 days · Pay balance when satisfied · Deposit refund if not
           </p>
 
           {/* Benefit pills */}
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {[
-              { icon: "🎮", text: "先免费试用 PWA" },
-              { icon: "🔒", text: "定金平台托管" },
-              { icon: "↩️", text: "不满意退定金" },
-              { icon: "⚡", text: "24h 内开始定制" },
+              { icon: "🎮", text: "Try Free PWA Demo" },
+              { icon: "🔒", text: "Deposit Held in Escrow" },
+              { icon: "↩️", text: "Money-Back Guarantee" },
+              { icon: "⚡", text: "Customization in 24h" },
             ].map(({ icon, text }) => (
               <span key={text} className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3.5 py-1.5 text-xs font-medium text-[#333] shadow-sm">
                 {icon} {text}
@@ -384,7 +384,7 @@ export default function MarketplacePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input ref={searchRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索：记账 / 预约 / 校园 / 餐厅 / 健身..."
+              placeholder="Search: invoicing, booking, fitness, restaurant, campus..."
               className="w-full rounded-2xl border border-black/[0.08] bg-white pl-12 pr-4 py-3.5 text-sm text-[#111] placeholder:text-muted-foreground shadow-sm focus:border-[#1D9E75]/50 focus:outline-none transition-colors" />
           </div>
         </section>
@@ -394,13 +394,13 @@ export default function MarketplacePage() {
         ══════════════════════════════ */}
         <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
           <div className="rounded-3xl border border-black/[0.06] bg-white p-5 sm:p-6 shadow-sm">
-            <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-5">怎么买？超简单 👇</p>
+            <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-5">How It Works 👇</p>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {[
-                { step: "01", icon: "🎮", title: "免费体验 PWA", desc: "先试用，不用注册，不用付钱" },
-                { step: "02", icon: "💰", title: "付 40% 定金", desc: "满意了再付定金，启动定制" },
-                { step: "03", icon: "🛠️", title: "开发者定制", desc: "帮你改 logo、配色、内容" },
-                { step: "04", icon: "🎉", title: "验收付尾款", desc: "满意才付尾款，不满意退定金" },
+                { step: "01", icon: "🎮", title: "Try Free PWA", desc: "No signup, no payment required" },
+                { step: "02", icon: "💰", title: "Pay 40% Deposit", desc: "Only pay when you're satisfied" },
+                { step: "03", icon: "🛠️", title: "Developer Customizes", desc: "Logo, colors, content — all yours" },
+                { step: "04", icon: "🎉", title: "Review & Pay Balance", desc: "Happy? Pay the rest. Not happy? Get refunded" },
               ].map(({ step, icon, title, desc }, i) => (
                 <div key={step} className="relative flex flex-col items-center text-center gap-2">
                   {i < 3 && (
@@ -426,7 +426,7 @@ export default function MarketplacePage() {
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
               <div className="sticky top-20 rounded-2xl border border-black/[0.06] bg-white p-2.5 shadow-sm">
-                <p className="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">软件分类</p>
+                <p className="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Categories</p>
                 {consumerCategories.map((cat) => (
                   <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
                     className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all text-left ${activeCategory === cat.id ? "bg-[#1D9E75] text-white shadow-[0_2px_8px_rgba(29,158,117,0.3)]" : "text-[#444] hover:bg-black/[0.04]"}`}>
@@ -458,12 +458,12 @@ export default function MarketplacePage() {
             <div className="flex-1 min-w-0">
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  共 <span className="font-bold text-[#111]">{filtered.length}</span> 款软件
+                  <span className="font-bold text-[#111]">{filtered.length}</span> apps
                   {activeCategory !== "all" && <span className="ml-1 text-[#1D9E75]">· {consumerCategories.find(c => c.id === activeCategory)?.label}</span>}
                 </p>
                 {search && (
                   <button onClick={() => setSearch("")} className="text-xs text-muted-foreground hover:text-[#111] transition-colors">
-                    清除搜索 ✕
+                    Clear ✕
                   </button>
                 )}
               </div>
@@ -471,11 +471,11 @@ export default function MarketplacePage() {
               {filtered.length === 0 ? (
                 <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-3xl border border-black/[0.06] bg-white text-center px-8">
                   <span className="text-5xl">🤔</span>
-                  <p className="text-sm font-semibold text-[#111]">没找到你想要的？</p>
-                  <p className="text-xs text-muted-foreground">在下方「我要定制」说说你的想法，程序员帮你免费做！</p>
+                  <p className="text-sm font-semibold text-[#111]">Can&apos;t find what you need?</p>
+                  <p className="text-xs text-muted-foreground">Post a custom request below and developers will build it for you!</p>
                   <button onClick={() => { setSearch(""); setActiveCategory("all"); }}
                     className="text-xs text-[#1D9E75] hover:underline">
-                    查看全部软件 →
+                    View all apps →
                   </button>
                 </div>
               ) : (
@@ -490,7 +490,7 @@ export default function MarketplacePage() {
         </section>
 
         {/* ══════════════════════════════
-            我要定制 / BOUNTY
+            CUSTOM REQUEST / BOUNTY
         ══════════════════════════════ */}
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-br from-[#0d6e52] to-[#1D9E75] p-8 md:p-10 text-white overflow-hidden relative">
@@ -501,31 +501,31 @@ export default function MarketplacePage() {
               {/* Left */}
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium mb-4">
-                  🎯 我要定制 / 发布悬赏
+                  🎯 Custom Request
                 </div>
                 <h2 className="text-3xl font-black leading-tight mb-2">
-                  没找到想要的？
-                  <br />说说你的想法，程序员帮你做！
+                  Can&apos;t find what you need?
+                  <br />Describe your idea — developers will build it!
                 </h2>
                 <p className="text-white/70 text-sm mb-6 leading-relaxed">
-                  完全用大白话描述 · 免费发布 · 多个程序员报价 · 先看 PWA Demo 再决定付不付
+                  Describe it in plain English · Free to post · Multiple developers bid · See a PWA demo before you pay
                 </p>
                 <textarea value={bountyText} onChange={(e) => setBountyText(e.target.value)}
-                  placeholder="例如：我想做一个给学生用的二手教材交换平台，可以发图片，按学校分类，买卖双方可以私信聊天，手机版就行..."
+                  placeholder="e.g., I need a used textbook marketplace for students — photo uploads, school-based categories, buyer-seller messaging, mobile-friendly..."
                   rows={4}
                   className="w-full resize-none rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none backdrop-blur-sm" />
                 <div className="mt-4 flex items-center gap-3">
                   <button onClick={submitBounty} disabled={!bountyText.trim()}
                     className="flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 text-sm font-black text-[#1D9E75] hover:bg-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-                    🚀 免费发布需求
+                    🚀 Post Request Free
                   </button>
-                  <span className="text-xs text-white/60">免费 · 无需注册 · 多人报价</span>
+                  <span className="text-xs text-white/60">Free · No signup · Multiple bids</span>
                 </div>
               </div>
 
               {/* Right: bounty wall */}
               <div>
-                <p className="text-sm font-bold text-white/80 mb-3">📋 最新悬赏需求</p>
+                <p className="text-sm font-bold text-white/80 mb-3">📋 Latest Requests</p>
                 <div className="space-y-3">
                   {consumerBounties.map((b) => (
                     <div key={b.id} className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm p-4 hover:bg-white/15 transition-colors">
@@ -542,7 +542,7 @@ export default function MarketplacePage() {
                     </div>
                   ))}
                   <Link href="/hunters" className="block text-center text-xs text-white/60 hover:text-white transition-colors py-1">
-                    查看全部 {">"}{">"}
+                    View all {">"}{">"}
                   </Link>
                 </div>
               </div>
@@ -555,8 +555,8 @@ export default function MarketplacePage() {
         ══════════════════════════════ */}
         <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#1D9E75] mb-2">真实用户故事</p>
-            <h2 className="text-2xl font-black text-[#111]">他们也不懂编程，但买到了自己的 App 🏆</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#1D9E75] mb-2">Success Stories</p>
+            <h2 className="text-2xl font-black text-[#111]">They can&apos;t code either, but they got their own app 🏆</h2>
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {successStories.map((story) => (
@@ -570,7 +570,7 @@ export default function MarketplacePage() {
                   <span className="ml-auto text-3xl">{story.emoji}</span>
                 </div>
                 <div className="rounded-2xl bg-white/70 backdrop-blur-sm p-4 space-y-2">
-                  <p className="text-xs font-bold text-[#1D9E75]">买了：{story.appName}</p>
+                  <p className="text-xs font-bold text-[#1D9E75]">Bought: {story.appName}</p>
                   <p className="text-xs text-[#444] leading-relaxed">&ldquo;{story.story}&rdquo;</p>
                 </div>
                 <div className="flex items-start gap-2">
@@ -588,10 +588,10 @@ export default function MarketplacePage() {
         <section className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { icon: "🔒", title: "定金平台托管", desc: "资金平台保管，验收满意才打给开发者" },
-              { icon: "🎮", title: "先试用 PWA", desc: "每款 App 都能免费体验，不满意不买" },
-              { icon: "↩️", title: "不满意退定金", desc: "7 天内验收，不满意申请退定金" },
-              { icon: "💬", title: "一对一服务", desc: "购买后可直接联系开发者提问和定制" },
+              { icon: "🔒", title: "Escrow Protected", desc: "Deposit held by platform, released only after approval" },
+              { icon: "🎮", title: "Try Before You Buy", desc: "Every app has a free PWA demo you can test" },
+              { icon: "↩️", title: "Money-Back Guarantee", desc: "7-day review period — not satisfied, get your deposit back" },
+              { icon: "💬", title: "1-on-1 Support", desc: "Chat directly with the developer after purchase" },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="rounded-2xl border border-black/[0.06] bg-white p-5 text-center hover:border-[#1D9E75]/30 hover:shadow-sm transition-all">
                 <div className="text-3xl mb-2">{icon}</div>

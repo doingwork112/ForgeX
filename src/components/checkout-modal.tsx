@@ -23,9 +23,9 @@ function getStripe() {
 interface CheckoutItem {
   appName: string;
   plan: "basic" | "custom";
-  totalPrice: number;   // ¥ total
-  deposit: number;      // ¥ deposit (40%)
-  tailPayment: number;  // ¥ tail payment (60%)
+  totalPrice: number;   // $ total
+  deposit: number;      // $ deposit (40%)
+  tailPayment: number;  // $ tail payment (60%)
   customNote?: string;
 }
 
@@ -56,7 +56,7 @@ function PaymentForm({
 
     const { error: submitErr } = await elements.submit();
     if (submitErr) {
-      setError(submitErr.message ?? "提交失败");
+      setError(submitErr.message ?? "Submission failed");
       setLoading(false);
       return;
     }
@@ -74,7 +74,7 @@ function PaymentForm({
     });
 
     if (confirmErr) {
-      setError(confirmErr.message ?? "支付失败，请重试");
+      setError(confirmErr.message ?? "Payment failed, please try again");
       setLoading(false);
       return;
     }
@@ -92,20 +92,20 @@ function PaymentForm({
       <div className="rounded-2xl border border-[#1D9E75]/20 bg-[#1D9E75]/[0.04] p-4 space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-sm font-semibold text-[#111]">
-            {item.appName} · {item.plan === "basic" ? "基础版" : "定制版"}
+            {item.appName} · {item.plan === "basic" ? "Standard" : "Custom"}
           </span>
-          <span className="text-xs text-muted-foreground">总价 ¥{item.totalPrice}</span>
+          <span className="text-xs text-muted-foreground">Total ${item.totalPrice}</span>
         </div>
         <div className="border-t border-[#1D9E75]/15 pt-2 flex items-baseline justify-between">
-          <span className="text-xs text-muted-foreground">本次支付（40% 定金）</span>
-          <span className="text-xl font-black text-[#1D9E75]">¥{item.deposit}</span>
+          <span className="text-xs text-muted-foreground">Today&apos;s payment (40% deposit)</span>
+          <span className="text-xl font-black text-[#1D9E75]">${item.deposit}</span>
         </div>
         <p className="text-[11px] text-muted-foreground">
-          剩余 ¥{item.tailPayment} 尾款在验收满意后支付 · 定金由平台托管
+          Remaining ${item.tailPayment} due after approval · Deposit held by platform
         </p>
       </div>
 
-      {/* Stripe Payment Element — renders card / WeChat / Alipay based on setup */}
+      {/* Stripe Payment Element */}
       <div className="rounded-2xl border border-black/[0.08] bg-white p-4">
         <PaymentElement
           options={{
@@ -135,19 +135,19 @@ function PaymentForm({
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            支付中...
+            Processing...
           </span>
         ) : (
-          `确认支付定金 ¥${item.deposit} 🎉`
+          `Pay $${item.deposit} Deposit 🎉`
         )}
       </button>
 
       <div className="flex items-center justify-center gap-4 text-[11px] text-muted-foreground">
-        <span className="flex items-center gap-1">🔒 Stripe 加密保护</span>
+        <span className="flex items-center gap-1">🔒 Secured by Stripe</span>
         <span>·</span>
-        <span>支持微信 / 支付宝 / 银行卡</span>
+        <span>Visa, Mastercard, Apple Pay</span>
         <span>·</span>
-        <span>不满意退定金</span>
+        <span>Money-back guarantee</span>
       </div>
     </form>
   );
@@ -165,21 +165,21 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: item.deposit * 100,          // ¥ → 分
+          amount: item.deposit * 100,          // $ → cents
           appName: item.appName,
           plan: item.plan,
-          currency: "cny",
+          currency: "usd",
         }),
       });
       const data = await res.json() as { clientSecret?: string; error?: string };
       if (data.error) {
-        if (data.error.includes("未配置")) setStripeAvailable(false);
+        if (data.error.includes("not configured") || data.error.includes("未配置")) setStripeAvailable(false);
         else setFetchError(data.error);
       } else {
         setClientSecret(data.clientSecret ?? null);
       }
     } catch {
-      setFetchError("网络错误，请刷新后重试");
+      setFetchError("Network error, please refresh and try again");
     }
   }, [item.deposit, item.appName, item.plan]);
 
@@ -196,8 +196,8 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-black text-[#111]">支付定金</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">安全支付 · 平台托管</p>
+            <h2 className="text-xl font-black text-[#111]">Pay Deposit</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Secure payment · Platform protected</p>
           </div>
           <button
             onClick={onClose}
@@ -221,7 +221,7 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
               onClick={fetchIntent}
               className="rounded-xl border border-black/[0.08] px-5 py-2 text-sm text-muted-foreground hover:text-[#111] transition-colors"
             >
-              重试
+              Retry
             </button>
           </div>
         )}
@@ -233,7 +233,7 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <p className="text-sm text-muted-foreground">正在初始化支付...</p>
+            <p className="text-sm text-muted-foreground">Initializing payment...</p>
           </div>
         )}
 
@@ -254,7 +254,7 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
                   borderRadius: "12px",
                 },
               },
-              locale: "zh",
+              locale: "en",
             }}
           >
             <PaymentForm item={item} onSuccess={onSuccess} />
@@ -276,7 +276,7 @@ function MockPaymentFallback({
   onClose: () => void;
   onSuccess: (id: string) => void;
 }) {
-  const [method, setMethod] = useState<"wechat" | "alipay" | "card">("wechat");
+  const [method, setMethod] = useState<"apple" | "google" | "card">("card");
   const [loading, setLoading] = useState(false);
   const [card, setCard] = useState({ number: "", expiry: "", cvv: "" });
 
@@ -293,9 +293,9 @@ function MockPaymentFallback({
     <div className="space-y-5">
       {/* Dev notice */}
       <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-xs text-orange-700">
-        <p className="font-semibold mb-0.5">⚙️ 开发模式</p>
-        <p>Stripe Key 未配置，当前为模拟支付。
-          <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="underline ml-1">获取 Key →</a>
+        <p className="font-semibold mb-0.5">⚙️ Dev Mode</p>
+        <p>Stripe key not configured. This is a simulated payment.
+          <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="underline ml-1">Get API Key →</a>
         </p>
       </div>
 
@@ -303,24 +303,24 @@ function MockPaymentFallback({
       <div className="rounded-2xl border border-[#1D9E75]/20 bg-[#1D9E75]/[0.04] p-4 space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-sm font-semibold text-[#111]">
-            {item.appName} · {item.plan === "basic" ? "基础版" : "定制版"}
+            {item.appName} · {item.plan === "basic" ? "Standard" : "Custom"}
           </span>
-          <span className="text-xs text-muted-foreground">总价 ¥{item.totalPrice}</span>
+          <span className="text-xs text-muted-foreground">Total ${item.totalPrice}</span>
         </div>
         <div className="border-t border-[#1D9E75]/15 pt-2 flex items-baseline justify-between">
-          <span className="text-xs text-muted-foreground">本次支付（40% 定金）</span>
-          <span className="text-xl font-black text-[#1D9E75]">¥{item.deposit}</span>
+          <span className="text-xs text-muted-foreground">Today&apos;s payment (40% deposit)</span>
+          <span className="text-xl font-black text-[#1D9E75]">${item.deposit}</span>
         </div>
-        <p className="text-[11px] text-muted-foreground">剩余 ¥{item.tailPayment} 尾款验收满意后支付</p>
+        <p className="text-[11px] text-muted-foreground">Remaining ${item.tailPayment} due after approval</p>
       </div>
 
       {/* Payment method */}
       <div className="grid grid-cols-3 gap-2">
-        {(["wechat", "alipay", "card"] as const).map((m) => (
+        {(["card", "apple", "google"] as const).map((m) => (
           <button key={m} onClick={() => setMethod(m)}
             className={`flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 py-3 text-xs font-semibold transition-all ${method === m ? "border-[#1D9E75] bg-[#1D9E75]/[0.04] text-[#1D9E75]" : "border-black/[0.08] text-muted-foreground hover:border-black/[0.15]"}`}>
-            <span className="text-2xl">{m === "wechat" ? "💚" : m === "alipay" ? "💙" : "💳"}</span>
-            <span>{m === "wechat" ? "微信支付" : m === "alipay" ? "支付宝" : "银行卡"}</span>
+            <span className="text-2xl">{m === "card" ? "💳" : m === "apple" ? "🍎" : "🔵"}</span>
+            <span>{m === "card" ? "Card" : m === "apple" ? "Apple Pay" : "Google Pay"}</span>
           </button>
         ))}
       </div>
@@ -330,7 +330,7 @@ function MockPaymentFallback({
           <input
             value={card.number}
             onChange={(e) => setCard({ ...card, number: e.target.value })}
-            placeholder="卡号  4242 4242 4242 4242"
+            placeholder="Card number  4242 4242 4242 4242"
             maxLength={19}
             className="w-full rounded-xl border border-black/[0.08] px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none"
           />
@@ -338,7 +338,7 @@ function MockPaymentFallback({
             <input
               value={card.expiry}
               onChange={(e) => setCard({ ...card, expiry: e.target.value })}
-              placeholder="有效期 MM/YY"
+              placeholder="MM/YY"
               maxLength={5}
               className="flex-1 rounded-xl border border-black/[0.08] px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none"
             />
@@ -356,11 +356,11 @@ function MockPaymentFallback({
       {method !== "card" && (
         <div className="flex items-center justify-center rounded-2xl border border-black/[0.06] bg-[#f8f9fa] py-8 text-center">
           <div>
-            <div className="text-5xl mb-3">{method === "wechat" ? "💚" : "💙"}</div>
+            <div className="text-5xl mb-3">{method === "apple" ? "🍎" : "🔵"}</div>
             <p className="text-sm font-semibold text-[#111]">
-              {method === "wechat" ? "微信扫码支付" : "支付宝扫码支付"}
+              {method === "apple" ? "Apple Pay" : "Google Pay"}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">（配置 Stripe 后自动显示真实二维码）</p>
+            <p className="text-xs text-muted-foreground mt-1">(Available when Stripe is configured)</p>
           </div>
         </div>
       )}
@@ -376,15 +376,15 @@ function MockPaymentFallback({
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            支付中...
+            Processing...
           </span>
         ) : (
-          `确认支付定金 ¥${item.deposit} 🎉`
+          `Pay $${item.deposit} Deposit 🎉`
         )}
       </button>
 
       <p className="text-center text-[11px] text-muted-foreground">
-        🔒 定金由平台托管 · 验收满意再付尾款 · 不满意退定金
+        🔒 Deposit held by platform · Pay balance after approval · Money-back guarantee
       </p>
     </div>
   );
