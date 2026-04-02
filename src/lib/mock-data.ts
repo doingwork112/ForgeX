@@ -7,12 +7,26 @@ export interface ConsumerApp {
   category: string;
   priceBasic: number;
   priceCustom?: number;
-  demoUrl: string;
+  deposit: number;        // 40% of priceBasic, paid upfront
+  demoUrl: string;        // iframe-embeddable live demo
+  pwaDemoUrl: string;     // "try before buy" link (opens in new tab)
   rating: number;
   sold: number;
   sellerName: string;
   sellerAvatar: string;
   sellerUsername: string;
+}
+
+export interface SuccessStory {
+  id: string;
+  name: string;
+  avatar: string;
+  role: string;
+  appName: string;
+  story: string;
+  result: string;
+  emoji: string;
+  gradient: string;
 }
 
 export interface ConsumerBounty {
@@ -41,29 +55,33 @@ export const consumerApps: ConsumerApp[] = [
   {
     id: "c1",
     name: "校园匿名聊天 App",
-    tagline: "专属你们学校的匿名表白墙和聊天室",
-    description: "用学校邮箱登录，就能匿名发帖、点赞、评论，就像 Fizz 一样！买了直接就能用，或者告诉我学校名字，我帮你改好。已有 47 所学校在用。",
-    tags: ["手机可用", "立即可用", "已帮助 200+ 人", "支持定制"],
+    tagline: "专属你们学校的匿名表白墙和聊天，先体验再决定！",
+    description: "用学校邮箱登录，匿名发帖、点赞、评论，就像 Fizz 一样！先免费体验 PWA 版，满意再付款。或者告诉我学校名字，帮你定制专属版。已帮助 87 所学校上线。",
+    tags: ["立即试用 PWA", "手机可用", "已帮助 87 人创业", "支持定制"],
     category: "campus",
     priceBasic: 199,
     priceCustom: 399,
+    deposit: 80,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.9,
-    sold: 47,
+    sold: 87,
     sellerName: "Dev Studio",
     sellerAvatar: "DS",
     sellerUsername: "devstudio",
   },
   {
     id: "c2",
-    name: "外卖点餐管理系统",
-    tagline: "扫码点餐 + 后厨接单，开店必备",
-    description: "顾客扫桌上二维码自助点餐，老板手机实时收到订单，自动打印小票。不需要任何技术，买了装一下就用。",
-    tags: ["手机可用", "扫码点餐", "已帮助 80+ 家餐厅", "立即可用"],
+    name: "餐厅扫码点餐系统",
+    tagline: "顾客扫桌上二维码，自助点餐，老板手机收单",
+    description: "不需要任何技术。顾客扫码→自助点餐→厨房实时接单→自动结账，省掉 2 个服务员的工资。先体验 Demo，满意再买。",
+    tags: ["立即试用", "手机可用", "已帮助 83 家餐厅", "7天不满意退款"],
     category: "food",
     priceBasic: 299,
     priceCustom: 599,
+    deposit: 120,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.8,
     sold: 83,
     sellerName: "Alex Chen",
@@ -72,13 +90,15 @@ export const consumerApps: ConsumerApp[] = [
   },
   {
     id: "c3",
-    name: "健身打卡记录 App",
-    tagline: "记录每天锻炼，和朋友一起坚持",
-    description: "每天记录运动、饮食和体重，和好友互相打卡督促。支持超过 200 种运动，有成就徽章让你更有动力。",
-    tags: ["手机可用", "好友打卡", "免费试用", "连续打卡有奖"],
+    name: "健身打卡 App",
+    tagline: "和朋友互相督促，连续打卡赢奖励",
+    description: "每天记录运动，和好友一起打卡，断签就互相提醒。支持 200+ 种运动，有成就徽章让你更有动力。先试用再决定。",
+    tags: ["立即免费试用", "手机可用", "好友打卡", "连续打卡有奖"],
     category: "health",
     priceBasic: 99,
+    deposit: 40,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.7,
     sold: 156,
     sellerName: "Nina Patel",
@@ -87,13 +107,15 @@ export const consumerApps: ConsumerApp[] = [
   },
   {
     id: "c4",
-    name: "智能记账助手",
-    tagline: "拍一下收据，自动帮你记账",
-    description: "用手机拍收据、扫微信支付宝账单，自动分类记录。月底生成报表，一眼看清钱花哪去了。",
-    tags: ["手机可用", "自动识别", "导出报表", "已帮助 500+ 人"],
+    name: "智能记账本",
+    tagline: "拍一下收据，自动帮你记账分类",
+    description: "手机拍收据或扫微信/支付宝账单，自动识别金额和分类。月底生成报表，一眼看清钱花哪去了。",
+    tags: ["立即试用", "手机可用", "自动识别", "已帮助 500+ 人"],
     category: "finance",
     priceBasic: 149,
+    deposit: 60,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.8,
     sold: 234,
     sellerName: "Sarah Kim",
@@ -103,13 +125,15 @@ export const consumerApps: ConsumerApp[] = [
   {
     id: "c5",
     name: "在线预约系统",
-    tagline: "客户自助预约，不再接电话",
-    description: "适合理发店、美甲、健身教练、诊所等。客户手机扫码预约，你收到通知，自动发提醒短信。",
-    tags: ["手机可用", "自动提醒", "减少爽约", "已帮助 120+ 商家"],
+    tagline: "客户扫码自助预约，你不用再接电话",
+    description: "适合理发店、美甲、健身教练、诊所。客户手机预约，你收通知，自动发提醒，减少爽约 60%。",
+    tags: ["立即试用", "手机可用", "减少爽约", "已帮助 120+ 商家"],
     category: "booking",
     priceBasic: 249,
     priceCustom: 499,
+    deposit: 100,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.9,
     sold: 121,
     sellerName: "Olivia Park",
@@ -118,14 +142,16 @@ export const consumerApps: ConsumerApp[] = [
   },
   {
     id: "c6",
-    name: "网店商城系统",
-    tagline: "5 分钟开一个自己的网店",
-    description: "不用懂代码，填写商品信息就能开店。支持微信支付、支付宝，自动管理库存，买家下单你就收钱。",
-    tags: ["手机可用", "电脑也行", "微信支付", "一次买断不收续费"],
+    name: "5 分钟开网店",
+    tagline: "不懂代码也能开网店，支持微信/支付宝收款",
+    description: "填写商品信息就能开店，支持微信支付、支付宝，自动管理库存。买家下单你收钱，一次买断不收年费。",
+    tags: ["立即试用", "电脑+手机", "微信收款", "买断不续费"],
     category: "startup",
     priceBasic: 349,
     priceCustom: 699,
+    deposit: 140,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.7,
     sold: 89,
     sellerName: "Dev Studio",
@@ -134,14 +160,16 @@ export const consumerApps: ConsumerApp[] = [
   },
   {
     id: "c7",
-    name: "同城交友聊天 App",
-    tagline: "附近的人，扫一扫认识新朋友",
-    description: "基于位置的交友 App，可以发现附近的人，发布动态，私信聊天。隐私保护，不暴露真实位置。",
-    tags: ["手机可用", "隐私保护", "实名认证", "已有 300+ 用户"],
+    name: "同城交友聊天",
+    tagline: "发现附近的人，扫一扫认识新朋友",
+    description: "基于位置的交友 App，发现附近的人，发动态，私聊。隐私保护，不暴露真实位置，实名认证更安全。",
+    tags: ["立即试用", "手机可用", "隐私保护", "实名认证"],
     category: "social",
     priceBasic: 199,
     priceCustom: 399,
+    deposit: 80,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.6,
     sold: 62,
     sellerName: "James Wu",
@@ -150,14 +178,16 @@ export const consumerApps: ConsumerApp[] = [
   },
   {
     id: "c8",
-    name: "学生兼职招聘平台",
-    tagline: "校园内找兼职，安全靠谱",
-    description: "专为大学生设计的兼职平台，发布和浏览校园周边兼职机会，实名认证，安全可靠，支持在线沟通。",
+    name: "校园兼职平台",
+    tagline: "大学生找兼职，发布/接单都免费",
+    description: "专为大学生设计，浏览校园周边兼职，实名认证，在线沟通，接单安全靠谱。免费发布兼职信息。",
     tags: ["手机可用", "实名认证", "校园专属", "免费发布"],
     category: "campus",
     priceBasic: 249,
     priceCustom: 499,
+    deposit: 100,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.8,
     sold: 38,
     sellerName: "Ryan Torres",
@@ -166,18 +196,56 @@ export const consumerApps: ConsumerApp[] = [
   },
   {
     id: "c9",
-    name: "宿舍生活助手",
-    tagline: "宿舍值日表、费用分摊、投票，一个 App 搞定",
-    description: "宿舍四人用同一个 App，轮流打扫自动提醒，水电费用 AA，还能投票决定宿舍事务。",
-    tags: ["手机可用", "多人共用", "免费试用", "专为宿舍设计"],
+    name: "宿舍生活神器",
+    tagline: "值日表、AA 分摊、宿舍投票，一个 App 全搞定",
+    description: "宿舍 4 人共用。轮流打扫自动提醒，水电费用 AA 算账，重要事情投票决定。专为宿舍设计，开箱即用。",
+    tags: ["立即试用", "手机可用", "多人共用", "宿舍专属"],
     category: "campus",
     priceBasic: 79,
+    deposit: 32,
     demoUrl: "https://socket.io/demos/chat/",
+    pwaDemoUrl: "https://socket.io/demos/chat/",
     rating: 4.9,
     sold: 312,
     sellerName: "Nina Patel",
     sellerAvatar: "NP",
     sellerUsername: "ninapatel",
+  },
+];
+
+export const successStories: SuccessStory[] = [
+  {
+    id: "ss1",
+    name: "小李同学",
+    avatar: "李",
+    role: "大学生创业者",
+    appName: "校园匿名聊天",
+    story: "我们学校没有匿名交流的地方，同学们都想要。我在 ForgeX 找到这个 App，先体验了 PWA 版觉得特别好用，付了定金让开发者改成了我们学校的配色和 logo。",
+    result: "上线 2 周，1200+ 同学注册，现在靠广告每个月赚 3000 元。",
+    emoji: "🎓",
+    gradient: "from-blue-50 to-indigo-50",
+  },
+  {
+    id: "ss2",
+    name: "张老板",
+    avatar: "张",
+    role: "餐厅老板",
+    appName: "扫码点餐系统",
+    story: "我开小餐厅，以前要 3 个服务员。朋友介绍来 ForgeX，先免费试用了点餐系统觉得很顺手，付了 120 元定金，开发者帮我改成了我餐厅的菜单和风格。",
+    result: "现在只需要 1 个服务员，每月节省人工费 ¥9000，系统 2 周就回本了。",
+    emoji: "🍜",
+    gradient: "from-orange-50 to-amber-50",
+  },
+  {
+    id: "ss3",
+    name: "王教练",
+    avatar: "王",
+    role: "健身教练",
+    appName: "在线预约系统",
+    story: "以前每天接十几个预约电话，特别乱。在 ForgeX 试用了预约系统，发现真的很好用，先付了 100 元定金，开发者帮我加了我的课程表和微信通知。",
+    result: "现在爽约率降低了 70%，每周多接了 8 个学员，收入涨了 ¥4000。",
+    emoji: "💪",
+    gradient: "from-green-50 to-emerald-50",
   },
 ];
 
