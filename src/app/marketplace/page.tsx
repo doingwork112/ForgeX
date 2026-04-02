@@ -274,20 +274,34 @@ export default function MarketplacePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // Disable snap once user scrolls past the two intro screens
+  // Disable snap once user reaches the product grid, re-enable when scrolling back up
   useEffect(() => {
     const el = containerRef.current;
     const grid = gridSectionRef.current;
     if (!el || !grid) return;
 
+    let snapDisabled = false;
+
     function onScroll() {
       if (!el || !grid) return;
       const gridTop = grid.offsetTop;
-      // When scroll reaches the grid section, disable snap so user can freely browse
-      if (el.scrollTop >= gridTop - window.innerHeight * 0.5) {
-        el.style.scrollSnapType = "none";
-      } else {
-        el.style.scrollSnapType = "y mandatory";
+      const scrollBottom = el.scrollTop + window.innerHeight;
+
+      // If we've scrolled to where the grid starts (or close), disable snap
+      if (scrollBottom >= gridTop + 100) {
+        if (!snapDisabled) {
+          snapDisabled = true;
+          el.style.scrollSnapType = "none";
+          // Also remove snap-align from the grid so it doesn't interfere
+          grid.style.scrollSnapAlign = "none";
+        }
+      } else if (el.scrollTop < gridTop - window.innerHeight * 0.8) {
+        // Re-enable snap when scrolled back well above the grid
+        if (snapDisabled) {
+          snapDisabled = false;
+          el.style.scrollSnapType = "y mandatory";
+          grid.style.scrollSnapAlign = "start";
+        }
       }
     }
 
@@ -467,7 +481,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             MAIN: SIDEBAR + GRID — free scroll after snap disabled
         ══════════════════════════════ */}
-        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
+        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10" style={{ scrollSnapAlign: "start" }}>
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
