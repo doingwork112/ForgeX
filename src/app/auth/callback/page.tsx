@@ -8,21 +8,30 @@ export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
+    // With implicit flow, tokens arrive in the URL hash fragment.
+    // Supabase client auto-detects them and creates a session.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         router.replace("/marketplace");
       }
     });
 
-    // Also handle the code exchange directly
-    const hash = window.location.hash;
-    if (hash) {
+    // Fallback: check if session already exists (e.g. page reload)
+    const timer = setTimeout(() => {
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           router.replace("/marketplace");
+        } else {
+          // No session after timeout — send back to login
+          router.replace("/auth/login");
         }
       });
-    }
+    }, 3000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, [router]);
 
   return (
