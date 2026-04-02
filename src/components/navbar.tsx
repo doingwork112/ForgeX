@@ -47,7 +47,7 @@ export function Navbar() {
   async function handleSignOut() {
     await signOut();
     setAvatarOpen(false);
-    router.push("/");
+    router.push("/marketplace");
     router.refresh();
   }
 
@@ -114,12 +114,11 @@ export function Navbar() {
                       </div>
                       <div className="py-1.5">
                         {[
-                          { href: "/profile", icon: "👤", label: "Profile Settings" },
-                          { href: `/u/${profile?.username ?? "me"}`, icon: "🌐", label: "Public Page" },
+                          { href: `/u/${profile?.username}`, icon: "👤", label: "My Profile" },
                           { href: "/dashboard", icon: "📊", label: "Dashboard" },
                           { href: "/dashboard/orders", icon: "📦", label: "Orders" },
                           { href: "/sell/new", icon: "➕", label: "List an App" },
-                        ].map(({ href, icon, label }) => (
+                        ].filter(({ href }) => !href.includes("undefined")).map(({ href, icon, label }) => (
                           <Link key={href} href={href} onClick={() => setAvatarOpen(false)}
                             className="flex items-center gap-3 px-4 py-2 text-sm text-[#333] hover:bg-black/[0.04] transition-colors">
                             <span className="text-base">{icon}</span>{label}
