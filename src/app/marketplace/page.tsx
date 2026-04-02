@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   consumerApps,
@@ -271,6 +271,29 @@ export default function MarketplacePage() {
   const [bountyText, setBountyText] = useState("");
   const [bountyPosted, setBountyPosted] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const gridSectionRef = useRef<HTMLElement>(null);
+
+  // Disable snap once user scrolls past the two intro screens
+  useEffect(() => {
+    const el = containerRef.current;
+    const grid = gridSectionRef.current;
+    if (!el || !grid) return;
+
+    function onScroll() {
+      if (!el || !grid) return;
+      const gridTop = grid.offsetTop;
+      // When scroll reaches the grid section, disable snap so user can freely browse
+      if (el.scrollTop >= gridTop - window.innerHeight * 0.5) {
+        el.style.scrollSnapType = "none";
+      } else {
+        el.style.scrollSnapType = "y mandatory";
+      }
+    }
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
   const filtered = consumerApps.filter((a) => {
     const matchCat = activeCategory === "all" || a.category === activeCategory;
@@ -308,7 +331,7 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#f8f9fa]" style={{ scrollSnapType: "y proximity" }}>
+    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y mandatory", WebkitOverflowScrolling: "touch" as never }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
@@ -442,9 +465,9 @@ export default function MarketplacePage() {
         </section>
 
         {/* ══════════════════════════════
-            MAIN: SIDEBAR + GRID — no snap, free scroll
+            MAIN: SIDEBAR + GRID — free scroll after snap disabled
         ══════════════════════════════ */}
-        <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
+        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
