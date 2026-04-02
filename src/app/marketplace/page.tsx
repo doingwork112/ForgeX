@@ -11,6 +11,7 @@ import {
 } from "@/lib/mock-data";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { CheckoutModal } from "@/components/checkout-modal";
 
 /* ─── helpers ─── */
 function StarRating({ rating }: { rating: number }) {
@@ -29,7 +30,7 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 /* ─── Live Demo Modal ─── */
-function DemoModal({ app, onClose }: { app: ConsumerApp; onClose: () => void }) {
+function DemoModal({ app, onClose, onBuy }: { app: ConsumerApp; onClose: () => void; onBuy: () => void }) {
   const [iframeError, setIframeError] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
@@ -81,7 +82,7 @@ function DemoModal({ app, onClose }: { app: ConsumerApp; onClose: () => void }) 
             <p className="text-xs font-semibold text-[#111]">体验满意？先付 <span className="text-[#1D9E75]">¥{app.deposit}</span> 定金，开发者立即开始为你定制</p>
             <p className="text-[11px] text-muted-foreground">不满意可退定金，全程平台保障</p>
           </div>
-          <button onClick={onClose} className="shrink-0 rounded-2xl bg-[#1D9E75] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_2px_12px_rgba(29,158,117,0.3)]">
+          <button onClick={() => { onClose(); onBuy(); }} className="shrink-0 rounded-2xl bg-[#1D9E75] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_2px_12px_rgba(29,158,117,0.3)]">
             付定金 ¥{app.deposit} →
           </button>
         </div>
@@ -91,9 +92,17 @@ function DemoModal({ app, onClose }: { app: ConsumerApp; onClose: () => void }) 
 }
 
 /* ─── Buy Modal ─── */
-function BuyModal({ app, onClose, onBuy }: { app: ConsumerApp; onClose: () => void; onBuy: () => void }) {
+/* PlanPickerModal — choose basic/custom, then open real CheckoutModal */
+function PlanPickerModal({
+  app,
+  onClose,
+  onConfirm,
+}: {
+  app: ConsumerApp;
+  onClose: () => void;
+  onConfirm: (plan: "basic" | "custom") => void;
+}) {
   const [plan, setPlan] = useState<"basic" | "custom">("basic");
-  const [step, setStep] = useState<"plan" | "deposit">("plan");
   const [customNote, setCustomNote] = useState("");
 
   return (
@@ -101,102 +110,64 @@ function BuyModal({ app, onClose, onBuy }: { app: ConsumerApp; onClose: () => vo
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-full max-w-md rounded-3xl border border-black/[0.1] bg-white p-7 shadow-2xl">
         <button onClick={onClose} className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-black/[0.05] hover:text-[#111] text-lg">✕</button>
+        <h2 className="text-xl font-bold text-[#111] mb-1">选择购买方案</h2>
+        <p className="text-sm text-muted-foreground mb-5">先付 40% 定金，体验满意再付尾款</p>
 
-        {step === "plan" ? (
-          <>
-            <h2 className="text-xl font-bold text-[#111] mb-1">选择购买方案</h2>
-            <p className="text-sm text-muted-foreground mb-5">先付 40% 定金，体验满意再付尾款</p>
-            <div className="space-y-3 mb-5">
-              <button onClick={() => setPlan("basic")}
-                className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${plan === "basic" ? "border-[#1D9E75] bg-[#1D9E75]/[0.04]" : "border-black/[0.08] hover:border-black/[0.15]"}`}>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-bold text-sm text-[#111]">基础版</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">完整功能，直接可用</p>
-                    <p className="text-xs text-muted-foreground">先付定金 <span className="font-semibold text-[#1D9E75]">¥{app.deposit}</span>，满意再付尾款 <span className="font-semibold">¥{app.priceBasic - app.deposit}</span></p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-[#1D9E75]">¥{app.priceBasic}</p>
-                    <p className="text-[11px] text-muted-foreground">总价</p>
-                  </div>
-                </div>
-              </button>
-              {app.priceCustom && (
-                <button onClick={() => setPlan("custom")}
-                  className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${plan === "custom" ? "border-[#1D9E75] bg-[#1D9E75]/[0.04]" : "border-black/[0.08] hover:border-black/[0.15]"}`}>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-sm text-[#111]">定制版</p>
-                        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">推荐</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">帮你改 logo/配色，部署好直接用</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-[#1D9E75]">¥{app.priceCustom}</p>
-                      <p className="text-[11px] text-muted-foreground">总价</p>
-                    </div>
-                  </div>
-                </button>
-              )}
-            </div>
-            {plan === "custom" && (
-              <div className="mb-4">
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">定制要求（选填）</label>
-                <textarea value={customNote} onChange={(e) => setCustomNote(e.target.value)}
-                  placeholder="例如：帮我改成北京大学的 logo，加上我们学校的绿色配色..."
-                  rows={2} className="w-full resize-none rounded-xl border border-black/[0.08] px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none" />
+        <div className="space-y-3 mb-5">
+          <button onClick={() => setPlan("basic")}
+            className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${plan === "basic" ? "border-[#1D9E75] bg-[#1D9E75]/[0.04]" : "border-black/[0.08] hover:border-black/[0.15]"}`}>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-bold text-sm text-[#111]">基础版</p>
+                <p className="text-xs text-muted-foreground mt-0.5">完整功能，直接可用</p>
+                <p className="text-xs text-muted-foreground">先付定金 <span className="font-semibold text-[#1D9E75]">¥{app.deposit}</span>，满意再付尾款 ¥{app.priceBasic - app.deposit}</p>
               </div>
-            )}
-            <div className="rounded-xl border border-black/[0.06] bg-[#f8f9fa] px-4 py-3 mb-5 space-y-1.5 text-xs text-muted-foreground">
-              <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">①</span> 先付 40% 定金，开发者开始为你定制</p>
-              <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">②</span> 体验 PWA 版 3~7 天，满意再付尾款</p>
-              <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">③</span> 不满意可申请退定金，平台全程保障</p>
+              <div className="text-right shrink-0">
+                <p className="text-2xl font-bold text-[#1D9E75]">¥{app.priceBasic}</p>
+                <p className="text-[11px] text-muted-foreground">总价</p>
+              </div>
             </div>
-            <button onClick={() => setStep("deposit")}
-              className="w-full rounded-2xl bg-[#1D9E75] py-4 text-base font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.3)]">
-              确认方案，先付定金 ¥{app.deposit} →
+          </button>
+          {app.priceCustom && (
+            <button onClick={() => setPlan("custom")}
+              className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${plan === "custom" ? "border-[#1D9E75] bg-[#1D9E75]/[0.04]" : "border-black/[0.08] hover:border-black/[0.15]"}`}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold text-sm text-[#111]">定制版</p>
+                    <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">推荐</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">改 logo/配色，部署好直接用</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-2xl font-bold text-[#1D9E75]">¥{app.priceCustom}</p>
+                  <p className="text-[11px] text-muted-foreground">总价</p>
+                </div>
+              </div>
             </button>
-            <p className="text-center text-xs text-muted-foreground mt-3">支持微信支付 / 支付宝 / 银行卡</p>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center gap-3 mb-5">
-              <button onClick={() => setStep("plan")} className="text-muted-foreground hover:text-[#111] transition-colors">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-              </button>
-              <h2 className="text-xl font-bold text-[#111]">支付定金 ¥{app.deposit}</h2>
-            </div>
-            <div className="rounded-2xl border border-[#1D9E75]/20 bg-[#1D9E75]/[0.04] p-4 mb-5 space-y-1 text-sm">
-              <p className="font-semibold text-[#111]">{app.name} · {plan === "basic" ? "基础版" : "定制版"}</p>
-              <p className="text-muted-foreground text-xs">定金 ¥{app.deposit} · 尾款 ¥{(plan === "basic" ? app.priceBasic : (app.priceCustom ?? app.priceBasic)) - app.deposit} · 总计 ¥{plan === "basic" ? app.priceBasic : app.priceCustom}</p>
-            </div>
-            {/* Card form (mock) */}
-            <div className="space-y-3 mb-5">
-              <div className="flex gap-2">
-                <div className="flex-1 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#f8f9fa] px-3 py-3">
-                  <span className="text-xl">💚</span>
-                  <span className="text-sm font-medium text-[#111]">微信支付</span>
-                </div>
-                <div className="flex-1 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#f8f9fa] px-3 py-3">
-                  <span className="text-xl">💙</span>
-                  <span className="text-sm font-medium text-[#111]">支付宝</span>
-                </div>
-              </div>
-              <div className="text-center text-xs text-muted-foreground">或</div>
-              <input placeholder="卡号" className="w-full rounded-xl border border-black/[0.08] px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none" />
-              <div className="flex gap-2">
-                <input placeholder="有效期 MM/YY" className="flex-1 rounded-xl border border-black/[0.08] px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none" />
-                <input placeholder="CVV" className="w-20 rounded-xl border border-black/[0.08] px-4 py-3 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none" />
-              </div>
-            </div>
-            <button onClick={onBuy}
-              className="w-full rounded-2xl bg-[#1D9E75] py-4 text-base font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.3)]">
-              确认支付定金 ¥{app.deposit} 🎉
-            </button>
-            <p className="text-center text-[11px] text-muted-foreground mt-3">定金由平台托管，验收满意后再释放给开发者</p>
-          </>
+          )}
+        </div>
+
+        {plan === "custom" && (
+          <div className="mb-4">
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">定制要求（选填）</label>
+            <textarea value={customNote} onChange={(e) => setCustomNote(e.target.value)}
+              placeholder="例如：帮我改成北京大学的 logo，加上我们学校的绿色配色..."
+              rows={2} className="w-full resize-none rounded-xl border border-black/[0.08] px-3 py-2.5 text-sm text-[#111] placeholder:text-muted-foreground focus:border-[#1D9E75]/50 focus:outline-none" />
+          </div>
         )}
+
+        <div className="rounded-xl border border-black/[0.06] bg-[#f8f9fa] px-4 py-3 mb-5 space-y-1.5 text-xs text-muted-foreground">
+          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">①</span> 先付 40% 定金，开发者开始为你定制</p>
+          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">②</span> 体验 PWA 版 3~7 天，满意再付尾款</p>
+          <p className="flex items-center gap-2"><span className="text-[#1D9E75] font-bold">③</span> 不满意可申请退定金，平台全程保障</p>
+        </div>
+
+        <button onClick={() => onConfirm(plan)}
+          className="w-full rounded-2xl bg-[#1D9E75] py-4 text-base font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.3)]">
+          确认方案，去支付定金 ¥{app.deposit} →
+        </button>
+        <p className="text-center text-xs text-muted-foreground mt-3">支持微信支付 / 支付宝 / 银行卡</p>
       </div>
     </div>
   );
@@ -294,7 +265,8 @@ export default function MarketplacePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [demoApp, setDemoApp] = useState<ConsumerApp | null>(null);
-  const [buyApp, setBuyApp] = useState<ConsumerApp | null>(null);
+  const [planApp, setPlanApp] = useState<ConsumerApp | null>(null);
+  const [checkoutItem, setCheckoutItem] = useState<{ appName: string; plan: "basic" | "custom"; totalPrice: number; deposit: number; tailPayment: number } | null>(null);
   const [boughtName, setBoughtName] = useState<string | null>(null);
   const [bountyText, setBountyText] = useState("");
   const [bountyPosted, setBountyPosted] = useState(false);
@@ -307,10 +279,24 @@ export default function MarketplacePage() {
     return matchCat && matchSearch;
   });
 
-  function handleBuy() {
-    if (!buyApp) return;
-    setBoughtName(buyApp.name);
-    setBuyApp(null);
+  function handlePlanConfirm(plan: "basic" | "custom") {
+    if (!planApp) return;
+    const totalPrice = plan === "basic" ? planApp.priceBasic : (planApp.priceCustom ?? planApp.priceBasic);
+    setCheckoutItem({
+      appName: planApp.name,
+      plan,
+      totalPrice,
+      deposit: planApp.deposit,
+      tailPayment: totalPrice - planApp.deposit,
+    });
+    setPlanApp(null);
+  }
+
+  function handleCheckoutSuccess(paymentIntentId: string) {
+    const name = checkoutItem?.appName ?? "";
+    setCheckoutItem(null);
+    setBoughtName(name);
+    console.log("Payment intent:", paymentIntentId);
     setTimeout(() => setBoughtName(null), 5000);
   }
 
@@ -332,8 +318,9 @@ export default function MarketplacePage() {
       <Navbar />
 
       {/* Modals */}
-      {demoApp && <DemoModal app={demoApp} onClose={() => setDemoApp(null)} />}
-      {buyApp && <BuyModal app={buyApp} onClose={() => setBuyApp(null)} onBuy={handleBuy} />}
+      {demoApp && <DemoModal app={demoApp} onClose={() => setDemoApp(null)} onBuy={() => { setDemoApp(null); setPlanApp(demoApp); }} />}
+      {planApp && <PlanPickerModal app={planApp} onClose={() => setPlanApp(null)} onConfirm={handlePlanConfirm} />}
+      {checkoutItem && <CheckoutModal item={checkoutItem} onClose={() => setCheckoutItem(null)} onSuccess={handleCheckoutSuccess} />}
 
       {/* Toast: purchase success */}
       {boughtName && (
@@ -494,7 +481,7 @@ export default function MarketplacePage() {
               ) : (
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {filtered.map((app) => (
-                    <AppCard key={app.id} app={app} onTry={() => setDemoApp(app)} onBuy={() => setBuyApp(app)} />
+                    <AppCard key={app.id} app={app} onTry={() => setDemoApp(app)} onBuy={() => setPlanApp(app)} />
                   ))}
                 </div>
               )}
