@@ -94,6 +94,27 @@ export type Database = {
         Insert: Omit<Database["public"]["Tables"]["bounties"]["Row"], "created_at">;
         Update: Partial<Database["public"]["Tables"]["bounties"]["Insert"]>;
       };
+      posts: {
+        Row: {
+          id: string;
+          author_id: string;
+          content: string;
+          parent_id: string | null;
+          created_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["posts"]["Row"], "created_at">;
+        Update: Partial<Database["public"]["Tables"]["posts"]["Insert"]>;
+      };
+      follows: {
+        Row: {
+          id: string;
+          follower_id: string;
+          following_id: string;
+          created_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["follows"]["Row"], "created_at">;
+        Update: Partial<Database["public"]["Tables"]["follows"]["Insert"]>;
+      };
     };
   };
 };
