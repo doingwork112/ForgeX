@@ -295,7 +295,7 @@ export default function MarketplacePage() {
         // Back in intro sections, re-enable snap
         if (inGrid) {
           inGrid = false;
-          container.style.scrollSnapType = "y proximity";
+          container.style.scrollSnapType = "y mandatory";
         }
       }
     }
@@ -340,7 +340,7 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y proximity", scrollBehavior: "smooth", WebkitOverflowScrolling: "touch" as never }}>
+    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y mandatory", WebkitOverflowScrolling: "touch" as never }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
