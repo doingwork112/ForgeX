@@ -31,7 +31,7 @@ export default function LoginPage() {
     setOauthLoading(provider);
     await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/marketplace` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/marketplace` },
     });
   }
 
