@@ -4,16 +4,21 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 export default function Home() {
   const router = useRouter();
   const [phase, setPhase] = useState<"idle" | "pop" | "settle" | "done">("idle");
 
   useEffect(() => {
+    // Handle OAuth redirect — if there's a session, go straight to marketplace
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) { router.replace("/marketplace"); return; }
+    });
     setPhase("pop");
     setTimeout(() => setPhase("settle"), 600);
     setTimeout(() => setPhase("done"), 1400);
-  }, []);
+  }, [router]);
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
@@ -79,6 +84,7 @@ export default function Home() {
             <Button
               size="lg"
               className="px-8 bg-white text-black font-bold hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+              onClick={() => router.push("/auth/signup")}
             >
               Sign up
             </Button>
@@ -86,6 +92,7 @@ export default function Home() {
               size="lg"
               variant="outline"
               className="px-8 border-white/20 text-white hover:bg-white/10 font-bold"
+              onClick={() => router.push("/auth/login")}
             >
               Log in
             </Button>
