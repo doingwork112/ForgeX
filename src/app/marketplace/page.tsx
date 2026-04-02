@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import {
   consumerApps,
   consumerCategories,
-  consumerBounties,
-  successStories,
   type ConsumerApp,
 } from "@/lib/mock-data";
 import { Navbar } from "@/components/navbar";
@@ -268,33 +265,33 @@ export default function MarketplacePage() {
   const [planApp, setPlanApp] = useState<ConsumerApp | null>(null);
   const [checkoutItem, setCheckoutItem] = useState<{ appName: string; plan: "basic" | "custom"; totalPrice: number; deposit: number; tailPayment: number } | null>(null);
   const [boughtName, setBoughtName] = useState<string | null>(null);
-  const [bountyText, setBountyText] = useState("");
-  const [bountyPosted, setBountyPosted] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // After user scrolls into the grid, remove snap so they can freely browse products
+  // Disable mandatory snap once user scrolls past the How It Works section
+  // so they can freely browse the product grid. Re-enable when scrolling back.
   useEffect(() => {
     const el = containerRef.current;
     const grid = gridSectionRef.current;
     if (!el || !grid) return;
     const container = el;
     const gridEl = grid;
-    let inGrid = false;
+    let snapOff = false;
 
     function onScroll() {
       const gridTop = gridEl.offsetTop;
-      // Once user is scrolled into the grid area, disable snap for free browsing
-      if (container.scrollTop >= gridTop - 20) {
-        if (!inGrid) {
-          inGrid = true;
+      // Threshold: when scroll position is within half a screen of the grid
+      const threshold = gridTop - window.innerHeight * 0.6;
+
+      if (container.scrollTop >= threshold) {
+        if (!snapOff) {
+          snapOff = true;
           container.style.scrollSnapType = "none";
         }
       } else {
-        // Back in intro sections, re-enable snap
-        if (inGrid) {
-          inGrid = false;
+        if (snapOff) {
+          snapOff = false;
           container.style.scrollSnapType = "y mandatory";
         }
       }
@@ -332,12 +329,6 @@ export default function MarketplacePage() {
     setTimeout(() => setBoughtName(null), 5000);
   }
 
-  function submitBounty() {
-    if (!bountyText.trim()) return;
-    setBountyPosted(true);
-    setBountyText("");
-    setTimeout(() => setBountyPosted(false), 4000);
-  }
 
   return (
     <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y mandatory", WebkitOverflowScrolling: "touch" as never }}>
@@ -361,17 +352,6 @@ export default function MarketplacePage() {
           <div>
             <p className="text-sm font-bold text-[#111]">Deposit paid successfully!</p>
             <p className="text-xs text-muted-foreground">The developer has been notified and will reach out within 24h</p>
-          </div>
-        </div>
-      )}
-
-      {/* Toast: bounty posted */}
-      {bountyPosted && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/20 bg-white px-6 py-4 shadow-[0_8px_40px_rgba(0,0,0,0.15)] animate-fade-up">
-          <span className="text-2xl">🚀</span>
-          <div>
-            <p className="text-sm font-bold text-[#111]">Request posted!</p>
-            <p className="text-xs text-muted-foreground">Developers can see it now, waiting for quotes...</p>
           </div>
         </div>
       )}
@@ -476,7 +456,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             MAIN: SIDEBAR + GRID — free scroll after snap disabled
         ══════════════════════════════ */}
-        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10" style={{ scrollSnapAlign: "start" }}>
+        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
@@ -544,118 +524,6 @@ export default function MarketplacePage() {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            CUSTOM REQUEST / BOUNTY
-        ══════════════════════════════ */}
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-br from-[#0d6e52] to-[#1D9E75] p-8 md:p-10 text-white overflow-hidden relative">
-            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/[0.06] blur-3xl pointer-events-none" />
-            <div className="absolute -left-10 -bottom-10 h-48 w-48 rounded-full bg-white/[0.04] blur-2xl pointer-events-none" />
-
-            <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px]">
-              {/* Left */}
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium mb-4">
-                  🎯 Custom Request
-                </div>
-                <h2 className="text-3xl font-black leading-tight mb-2">
-                  Can&apos;t find what you need?
-                  <br />Describe your idea — developers will build it!
-                </h2>
-                <p className="text-white/70 text-sm mb-6 leading-relaxed">
-                  Describe it in plain English · Free to post · Multiple developers bid · See a PWA demo before you pay
-                </p>
-                <textarea value={bountyText} onChange={(e) => setBountyText(e.target.value)}
-                  placeholder="e.g., I need a used textbook marketplace for students — photo uploads, school-based categories, buyer-seller messaging, mobile-friendly..."
-                  rows={4}
-                  className="w-full resize-none rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none backdrop-blur-sm" />
-                <div className="mt-4 flex items-center gap-3">
-                  <button onClick={submitBounty} disabled={!bountyText.trim()}
-                    className="flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 text-sm font-black text-[#1D9E75] hover:bg-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-                    🚀 Post Request Free
-                  </button>
-                  <span className="text-xs text-white/60">Free · No signup · Multiple bids</span>
-                </div>
-              </div>
-
-              {/* Right: bounty wall */}
-              <div>
-                <p className="text-sm font-bold text-white/80 mb-3">📋 Latest Requests</p>
-                <div className="space-y-3">
-                  {consumerBounties.map((b) => (
-                    <div key={b.id} className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm p-4 hover:bg-white/15 transition-colors">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-bold">{b.avatar}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white leading-snug line-clamp-2">{b.title}</p>
-                          <div className="flex items-center justify-between mt-1.5">
-                            <span className="text-xs text-white/60">{b.author}</span>
-                            <span className="text-sm font-black text-yellow-300">{b.budget}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <Link href="/hunters" className="block text-center text-xs text-white/60 hover:text-white transition-colors py-1">
-                    View all {">"}{">"}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════════════════
-            SUCCESS STORIES
-        ══════════════════════════════ */}
-        <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#1D9E75] mb-2">Success Stories</p>
-            <h2 className="text-2xl font-black text-[#111]">They can&apos;t code either, but they got their own app 🏆</h2>
-          </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {successStories.map((story) => (
-              <div key={story.id} className={`rounded-3xl border border-black/[0.06] bg-gradient-to-br ${story.gradient} p-6 space-y-4`}>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow text-xl font-black text-[#1D9E75]">{story.avatar}</div>
-                  <div>
-                    <p className="font-bold text-sm text-[#111]">{story.name}</p>
-                    <p className="text-xs text-muted-foreground">{story.role}</p>
-                  </div>
-                  <span className="ml-auto text-3xl">{story.emoji}</span>
-                </div>
-                <div className="rounded-2xl bg-white/70 backdrop-blur-sm p-4 space-y-2">
-                  <p className="text-xs font-bold text-[#1D9E75]">Bought: {story.appName}</p>
-                  <p className="text-xs text-[#444] leading-relaxed">&ldquo;{story.story}&rdquo;</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-[#1D9E75] text-lg">→</span>
-                  <p className="text-xs font-semibold text-[#111] leading-relaxed">{story.result}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ══════════════════════════════
-            TRUST BAR
-        ══════════════════════════════ */}
-        <section className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {[
-              { icon: "🔒", title: "Escrow Protected", desc: "Deposit held by platform, released only after approval" },
-              { icon: "🎮", title: "Try Before You Buy", desc: "Every app has a free PWA demo you can test" },
-              { icon: "↩️", title: "Money-Back Guarantee", desc: "7-day review period — not satisfied, get your deposit back" },
-              { icon: "💬", title: "1-on-1 Support", desc: "Chat directly with the developer after purchase" },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} className="rounded-2xl border border-black/[0.06] bg-white p-5 text-center hover:border-[#1D9E75]/30 hover:shadow-sm transition-all">
-                <div className="text-3xl mb-2">{icon}</div>
-                <p className="text-sm font-bold text-[#111]">{title}</p>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
       </main>
 
       <Footer />
