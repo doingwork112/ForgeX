@@ -272,122 +272,36 @@ export default function MarketplacePage() {
   const [bountyPosted, setBountyPosted] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
-  const howItWorksRef = useRef<HTMLElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // JS-based fullpage scroll for intro sections (Apple-style strong snap)
+  // After user scrolls into the grid, remove snap so they can freely browse products
   useEffect(() => {
     const el = containerRef.current;
-    const hero = heroRef.current;
-    const hiw = howItWorksRef.current;
     const grid = gridSectionRef.current;
-    if (!el || !hero || !hiw || !grid) return;
-
-    // Capture non-null refs for closures
+    if (!el || !grid) return;
     const container = el;
-    const heroEl = hero;
     const gridEl = grid;
+    let inGrid = false;
 
-    let isAnimating = false;
-    let currentSection = 0; // 0=hero, 1=how-it-works, 2=grid (free scroll)
-
-    function getSnapTargets() {
-      return [
-        0,                         // hero top
-        heroEl.offsetHeight,       // how-it-works top
-        gridEl.offsetTop,          // grid top
-      ];
-    }
-
-    function scrollToSection(idx: number) {
-      const targets = getSnapTargets();
-      const target = targets[idx] ?? targets[targets.length - 1];
-      isAnimating = true;
-      container.scrollTo({ top: target, behavior: "smooth" });
-      // Release lock after animation
-      setTimeout(() => { isAnimating = false; }, 700);
-    }
-
-    // Determine current section from scroll position
-    function detectSection(): number {
-      const targets = getSnapTargets();
-      const st = container.scrollTop;
-      if (st >= targets[2] - 50) return 2;
-      if (st >= targets[1] - 50) return 1;
-      return 0;
-    }
-
-    // Wheel handler — hijack scroll in intro sections
-    function onWheel(e: WheelEvent) {
-      if (isAnimating) { e.preventDefault(); return; }
-
-      currentSection = detectSection();
-
-      // If in the grid zone (section 2+), allow natural scroll
-      // But if scrolling UP from very top of grid, snap back to how-it-works
-      if (currentSection >= 2) {
-        if (e.deltaY < 0 && container.scrollTop <= gridEl.offsetTop + 10) {
-          e.preventDefault();
-          currentSection = 1;
-          scrollToSection(1);
+    function onScroll() {
+      const gridTop = gridEl.offsetTop;
+      // Once user is scrolled into the grid area, disable snap for free browsing
+      if (container.scrollTop >= gridTop - 20) {
+        if (!inGrid) {
+          inGrid = true;
+          container.style.scrollSnapType = "none";
         }
-        return; // free scroll in grid area
-      }
-
-      // In intro sections: hijack scroll
-      e.preventDefault();
-      const threshold = 30; // minimum delta to trigger
-      if (Math.abs(e.deltaY) < threshold) return;
-
-      if (e.deltaY > 0) {
-        // scroll down
-        currentSection = Math.min(currentSection + 1, 2);
       } else {
-        // scroll up
-        currentSection = Math.max(currentSection - 1, 0);
-      }
-      scrollToSection(currentSection);
-    }
-
-    // Touch handler — same logic for mobile swipe
-    let touchStartY = 0;
-    function onTouchStart(e: TouchEvent) {
-      touchStartY = e.touches[0].clientY;
-    }
-    function onTouchEnd(e: TouchEvent) {
-      if (isAnimating) return;
-      const deltaY = touchStartY - e.changedTouches[0].clientY;
-      currentSection = detectSection();
-
-      // Free scroll in grid, but catch swipe-up at top of grid
-      if (currentSection >= 2) {
-        if (deltaY < -60 && container.scrollTop <= gridEl.offsetTop + 10) {
-          currentSection = 1;
-          scrollToSection(1);
+        // Back in intro sections, re-enable snap
+        if (inGrid) {
+          inGrid = false;
+          container.style.scrollSnapType = "y proximity";
         }
-        return;
       }
-
-      const threshold = 50;
-      if (Math.abs(deltaY) < threshold) return;
-
-      if (deltaY > 0) {
-        currentSection = Math.min(currentSection + 1, 2);
-      } else {
-        currentSection = Math.max(currentSection - 1, 0);
-      }
-      scrollToSection(currentSection);
     }
 
-    container.addEventListener("wheel", onWheel, { passive: false });
-    container.addEventListener("touchstart", onTouchStart, { passive: true });
-    container.addEventListener("touchend", onTouchEnd, { passive: true });
-    return () => {
-      container.removeEventListener("wheel", onWheel);
-      container.removeEventListener("touchstart", onTouchStart);
-      container.removeEventListener("touchend", onTouchEnd);
-    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
   const filtered = consumerApps.filter((a) => {
@@ -426,7 +340,7 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", WebkitOverflowScrolling: "touch" as never }}>
+    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y proximity", scrollBehavior: "smooth", WebkitOverflowScrolling: "touch" as never }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
@@ -466,7 +380,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             HERO — Full viewport snap section
         ══════════════════════════════ */}
-        <section ref={heroRef} className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)" }}>
+        <section className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)", scrollSnapAlign: "start" }}>
           <div className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
             1,200+ apps sold to happy customers 🎊
@@ -518,7 +432,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             HOW IT WORKS — Full viewport snap section
         ══════════════════════════════ */}
-        <section ref={howItWorksRef} className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh" }}>
+        <section className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh", scrollSnapAlign: "start" }}>
           <div className="w-full max-w-5xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
@@ -562,7 +476,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             MAIN: SIDEBAR + GRID — free scroll after snap disabled
         ══════════════════════════════ */}
-        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
+        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10" style={{ scrollSnapAlign: "start" }}>
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
