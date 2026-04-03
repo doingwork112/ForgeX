@@ -271,63 +271,86 @@ export default function MarketplacePage() {
   const hiwRef = useRef<HTMLElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // Pure JS debounced snap: let user scroll freely, then auto-align when they stop.
-  // Only applies in the intro zone (Hero / How It Works). Grid area = fully free.
+  // Snap on wheel-end / touchend — fires only when user actually lifts off,
+  // not mid-scroll. Uses a fast rAF animation instead of slow browser smooth.
   useEffect(() => {
     const el = containerRef.current;
-    const hero = heroRef.current;
     const hiw = hiwRef.current;
     const grid = gridSectionRef.current;
-    if (!el || !hero || !hiw || !grid) return;
+    if (!el || !hiw || !grid) return;
 
     const container = el;
     const hiwEl = hiw;
     const gridEl = grid;
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    let wheelTimer: ReturnType<typeof setTimeout> | null = null;
+    let rafId: number | null = null;
     let isSnapping = false;
+
+    // Fast eased scroll animation (~220ms)
+    function animateTo(target: number) {
+      if (rafId) cancelAnimationFrame(rafId);
+      const start = container.scrollTop;
+      const dist = target - start;
+      if (Math.abs(dist) < 4) return;
+      const duration = 220;
+      const startTime = performance.now();
+      isSnapping = true;
+
+      function step(now: number) {
+        const t = Math.min((now - startTime) / duration, 1);
+        // easeInOut cubic
+        const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        container.scrollTop = start + dist * ease;
+        if (t < 1) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          container.scrollTop = target;
+          isSnapping = false;
+          rafId = null;
+        }
+      }
+      rafId = requestAnimationFrame(step);
+    }
 
     function snapToNearest() {
       if (isSnapping) return;
       const st = container.scrollTop;
       const gridTop = gridEl.offsetTop;
+      if (st >= gridTop - window.innerHeight * 0.4) return; // in grid zone
 
-      // If user is in/past the grid zone, do nothing — free scroll
-      if (st >= gridTop - window.innerHeight * 0.3) return;
-
-      // Snap targets: top of hero (0), top of how-it-works
       const hiwTop = hiwEl.offsetTop;
-      const targets = [0, hiwTop];
-
-      // Find nearest target
-      let nearest = targets[0];
-      let minDist = Math.abs(st - targets[0]);
-      for (let i = 1; i < targets.length; i++) {
-        const dist = Math.abs(st - targets[i]);
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = targets[i];
-        }
-      }
-
-      // Only snap if we're not already very close (avoid jitter)
-      if (minDist < 5) return;
-
-      isSnapping = true;
-      container.scrollTo({ top: nearest, behavior: "smooth" });
-      setTimeout(() => { isSnapping = false; }, 350);
+      // Snap to whichever section the user is closer to
+      const nearest = Math.abs(st) < Math.abs(st - hiwTop) ? 0 : hiwTop;
+      if (Math.abs(st - nearest) < 4) return;
+      animateTo(nearest);
     }
 
-    function onScroll() {
-      if (isSnapping) return;
-      if (timer) clearTimeout(timer);
-      // Wait for user to stop scrolling, then snap
-      timer = setTimeout(snapToNearest, 50);
+    // Wheel: snap shortly after wheel events stop
+    function onWheel() {
+      if (wheelTimer) clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(snapToNearest, 80);
     }
 
-    container.addEventListener("scroll", onScroll, { passive: true });
+    // Touch: snap immediately when finger lifts
+    let touchStartY = 0;
+    function onTouchStart(e: TouchEvent) {
+      touchStartY = e.touches[0].clientY;
+    }
+    function onTouchEnd(e: TouchEvent) {
+      const dy = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(dy) < 10) return; // not a real swipe
+      setTimeout(snapToNearest, 30);
+    }
+
+    container.addEventListener("wheel", onWheel, { passive: true });
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
-      container.removeEventListener("scroll", onScroll);
-      if (timer) clearTimeout(timer);
+      container.removeEventListener("wheel", onWheel);
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchend", onTouchEnd);
+      if (wheelTimer) clearTimeout(wheelTimer);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
