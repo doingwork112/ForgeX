@@ -255,6 +255,36 @@ export default function UserProfilePage({ params }: { params: { username: string
         .single();
 
       if (error || !data) {
+        // If the logged-in user matches the URL username, auto-create their profile
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (currentUser && params.username) {
+          const { data: created } = await supabase
+            .from("profiles")
+            .upsert({
+              id: currentUser.id,
+              username: params.username,
+              display_name: params.username,
+              role: "buyer" as const,
+            })
+            .select()
+            .single();
+          if (created) {
+            setProfile(created);
+            setDisplayName(created.display_name ?? "");
+            setBio(created.bio ?? "");
+            setCurrentlyBuilding(created.currently_building ?? "");
+            setWebsite(created.website ?? "");
+            setTwitter(created.twitter ?? "");
+            setBannerColor(created.banner_color ?? GRADIENT_PRESETS[0]);
+            setBannerUrl(created.banner_url ?? null);
+            setAvatarUrl(created.avatar_url ?? null);
+            setRole(created.role ?? "buyer");
+            setProfileLoading(false);
+            fetchTabData(created.id);
+            fetchFollowCounts(created.id);
+            return;
+          }
+        }
         setNotFound(true);
         setProfileLoading(false);
         return;

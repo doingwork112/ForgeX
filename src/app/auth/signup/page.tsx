@@ -53,7 +53,7 @@ export default function SignupPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data: authData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -64,10 +64,27 @@ export default function SignupPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
-      router.push("/marketplace");
-      router.refresh();
+      return;
     }
+
+    // Explicitly create profile row — don't rely on DB trigger
+    if (authData.user) {
+      const { error: profileError } = await supabase.from("profiles").upsert({
+        id: authData.user.id,
+        username,
+        display_name: username,
+        role,
+      });
+      if (profileError && profileError.code !== "23505") {
+        // 23505 = unique violation (profile already exists), safe to ignore
+        setError("Account created but profile setup failed: " + profileError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    router.push(`/u/${username}`);
+    router.refresh();
   }
 
   return (
