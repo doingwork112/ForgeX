@@ -521,7 +521,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             MAIN: SIDEBAR + GRID — free scroll after snap disabled
         ══════════════════════════════ */}
-        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-10">
+        <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-16">
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
