@@ -269,67 +269,113 @@ export default function MarketplacePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // Snap hero section to top when user stops scrolling before reaching the grid
+  // Fullpage scroll: hero zone wheel/touch are fully intercepted.
+  // Any scroll gesture while in hero → jump to grid. Scrolling up in grid top → back to hero.
+  // During animation all scroll input is blocked (no interruption).
   useEffect(() => {
     const el = containerRef.current;
     const grid = gridSectionRef.current;
     if (!el || !grid) return;
     const container = el;
     const gridEl = grid;
-    let wheelTimer: ReturnType<typeof setTimeout> | null = null;
     let rafId: number | null = null;
-    let isSnapping = false;
+    let isAnimating = false;
 
-    function animateTo(target: number) {
+    function animateTo(target: number, done?: () => void) {
       if (rafId) cancelAnimationFrame(rafId);
       const start = container.scrollTop;
       const dist = target - start;
-      if (Math.abs(dist) < 4) return;
-      const duration = 200;
+      if (Math.abs(dist) < 2) { isAnimating = false; done?.(); return; }
+      const duration = 550; // smooth, not too fast not too slow
       const t0 = performance.now();
-      isSnapping = true;
+      isAnimating = true;
       function step(now: number) {
-        const t = Math.min((now - t0) / duration, 1);
-        const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        const p = Math.min((now - t0) / duration, 1);
+        // easeInOutQuart — feels like native iOS page scroll
+        const ease = p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2;
         container.scrollTop = start + dist * ease;
-        if (t < 1) { rafId = requestAnimationFrame(step); }
-        else { container.scrollTop = target; isSnapping = false; rafId = null; }
+        if (p < 1) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          container.scrollTop = target;
+          isAnimating = false;
+          rafId = null;
+          done?.();
+        }
       }
       rafId = requestAnimationFrame(step);
     }
 
-    function snapIfNeeded() {
-      if (isSnapping) return;
+    function getGridTop() { return gridEl.offsetTop; }
+
+    // Wheel handler — fully intercept in hero zone
+    function onWheel(e: WheelEvent) {
       const st = container.scrollTop;
-      const gridTop = gridEl.offsetTop;
-      // Already at top or past grid — nothing to do
-      if (st < 20) return;
-      if (st >= gridTop) return;
-      // Between hero and grid: snap to whichever end is closer
-      const toTop = st;
-      const toGrid = gridTop - st;
-      animateTo(toTop <= toGrid ? 0 : gridTop);
+      const gridTop = getGridTop();
+
+      // In grid area: allow native scroll, but intercept upward at very top of grid
+      if (st >= gridTop) {
+        if (e.deltaY < 0 && st <= gridTop + 5) {
+          e.preventDefault();
+          if (!isAnimating) animateTo(0);
+        }
+        return;
+      }
+
+      // In hero zone: block all native scroll, we handle it
+      e.preventDefault();
+      if (isAnimating) return;
+
+      if (e.deltaY > 0) {
+        // scroll down → go to grid
+        animateTo(gridTop);
+      } else {
+        // scroll up → go to top
+        animateTo(0);
+      }
     }
 
-    function onWheel() {
-      if (wheelTimer) clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(snapIfNeeded, 40);
+    // Touch handler
+    let touchStartY = 0;
+    let touchStartST = 0;
+    function onTouchStart(e: TouchEvent) {
+      touchStartY = e.touches[0].clientY;
+      touchStartST = container.scrollTop;
     }
-    let ty = 0;
-    function onTouchStart(e: TouchEvent) { ty = e.touches[0].clientY; }
+    function onTouchMove(e: TouchEvent) {
+      // Block native scroll in hero zone during animation
+      if (container.scrollTop < getGridTop() || isAnimating) {
+        e.preventDefault();
+      }
+    }
     function onTouchEnd(e: TouchEvent) {
-      if (Math.abs(ty - e.changedTouches[0].clientY) < 10) return;
-      setTimeout(snapIfNeeded, 30);
+      const dy = touchStartY - e.changedTouches[0].clientY;
+      const st = touchStartST;
+      const gridTop = getGridTop();
+      if (isAnimating) return;
+
+      if (st >= gridTop) {
+        // In grid: only intercept swipe-up from very top
+        if (dy < -40 && container.scrollTop <= gridTop + 5) {
+          animateTo(0);
+        }
+        return;
+      }
+
+      // In hero: any meaningful swipe triggers transition
+      if (Math.abs(dy) < 30) return;
+      animateTo(dy > 0 ? gridTop : 0);
     }
 
-    container.addEventListener("wheel", onWheel, { passive: true });
+    container.addEventListener("wheel", onWheel, { passive: false });
     container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchmove", onTouchMove, { passive: false });
     container.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
       container.removeEventListener("wheel", onWheel);
       container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
       container.removeEventListener("touchend", onTouchEnd);
-      if (wheelTimer) clearTimeout(wheelTimer);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
