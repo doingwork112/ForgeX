@@ -314,15 +314,14 @@ export default function MarketplacePage() {
 
       isSnapping = true;
       container.scrollTo({ top: nearest, behavior: "smooth" });
-      // Release snap lock after animation completes
-      setTimeout(() => { isSnapping = false; }, 600);
+      setTimeout(() => { isSnapping = false; }, 350);
     }
 
     function onScroll() {
       if (isSnapping) return;
       if (timer) clearTimeout(timer);
       // Wait for user to stop scrolling, then snap
-      timer = setTimeout(snapToNearest, 120);
+      timer = setTimeout(snapToNearest, 50);
     }
 
     container.addEventListener("scroll", onScroll, { passive: true });
