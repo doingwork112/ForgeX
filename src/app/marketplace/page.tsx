@@ -267,38 +267,69 @@ export default function MarketplacePage() {
   const [boughtName, setBoughtName] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const hiwRef = useRef<HTMLElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // Disable mandatory snap once user scrolls past the How It Works section
-  // so they can freely browse the product grid. Re-enable when scrolling back.
+  // Pure JS debounced snap: let user scroll freely, then auto-align when they stop.
+  // Only applies in the intro zone (Hero / How It Works). Grid area = fully free.
   useEffect(() => {
     const el = containerRef.current;
+    const hero = heroRef.current;
+    const hiw = hiwRef.current;
     const grid = gridSectionRef.current;
-    if (!el || !grid) return;
+    if (!el || !hero || !hiw || !grid) return;
+
     const container = el;
+    const hiwEl = hiw;
     const gridEl = grid;
-    let snapOff = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let isSnapping = false;
 
-    function onScroll() {
+    function snapToNearest() {
+      if (isSnapping) return;
+      const st = container.scrollTop;
       const gridTop = gridEl.offsetTop;
-      // Threshold: when scroll position is within half a screen of the grid
-      const threshold = gridTop - window.innerHeight * 0.6;
 
-      if (container.scrollTop >= threshold) {
-        if (!snapOff) {
-          snapOff = true;
-          container.style.scrollSnapType = "none";
-        }
-      } else {
-        if (snapOff) {
-          snapOff = false;
-          container.style.scrollSnapType = "y mandatory";
+      // If user is in/past the grid zone, do nothing — free scroll
+      if (st >= gridTop - window.innerHeight * 0.3) return;
+
+      // Snap targets: top of hero (0), top of how-it-works
+      const hiwTop = hiwEl.offsetTop;
+      const targets = [0, hiwTop];
+
+      // Find nearest target
+      let nearest = targets[0];
+      let minDist = Math.abs(st - targets[0]);
+      for (let i = 1; i < targets.length; i++) {
+        const dist = Math.abs(st - targets[i]);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = targets[i];
         }
       }
+
+      // Only snap if we're not already very close (avoid jitter)
+      if (minDist < 5) return;
+
+      isSnapping = true;
+      container.scrollTo({ top: nearest, behavior: "smooth" });
+      // Release snap lock after animation completes
+      setTimeout(() => { isSnapping = false; }, 600);
+    }
+
+    function onScroll() {
+      if (isSnapping) return;
+      if (timer) clearTimeout(timer);
+      // Wait for user to stop scrolling, then snap
+      timer = setTimeout(snapToNearest, 120);
     }
 
     container.addEventListener("scroll", onScroll, { passive: true });
-    return () => container.removeEventListener("scroll", onScroll);
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   const filtered = consumerApps.filter((a) => {
@@ -331,7 +362,7 @@ export default function MarketplacePage() {
 
 
   return (
-    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto", scrollSnapType: "y mandatory", WebkitOverflowScrolling: "touch" as never }}>
+    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto" }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
@@ -360,7 +391,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             HERO — Full viewport snap section
         ══════════════════════════════ */}
-        <section className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)", scrollSnapAlign: "start" }}>
+        <section ref={heroRef} className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)" }}>
           <div className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
             1,200+ apps sold to happy customers 🎊
@@ -412,7 +443,7 @@ export default function MarketplacePage() {
         {/* ══════════════════════════════
             HOW IT WORKS — Full viewport snap section
         ══════════════════════════════ */}
-        <section className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh", scrollSnapAlign: "start" }}>
+        <section ref={hiwRef} className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh" }}>
           <div className="w-full max-w-5xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
