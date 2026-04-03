@@ -417,7 +417,9 @@ export default function UserProfilePage({ params }: { params: { username: string
       .select()
       .single();
 
-    if (!error && data) {
+    if (error) {
+      alert("Failed to post: " + error.message);
+    } else if (data) {
       setMyPosts((prev) => [data as PostWithAuthor, ...prev]);
       setNewPostContent("");
     }
