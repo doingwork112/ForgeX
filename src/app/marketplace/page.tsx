@@ -302,10 +302,13 @@ export default function MarketplacePage() {
       if (isSnapping) return;
       const st = container.scrollTop;
       const gridTop = gridEl.offsetTop;
-      // Only snap if user is in hero zone (before grid)
-      if (st >= gridTop - window.innerHeight * 0.5) return;
-      // Snap to top if partially scrolled
-      if (st > 20) animateTo(0);
+      // Already at top or past grid — nothing to do
+      if (st < 20) return;
+      if (st >= gridTop) return;
+      // Between hero and grid: snap to whichever end is closer
+      const toTop = st;
+      const toGrid = gridTop - st;
+      animateTo(toTop <= toGrid ? 0 : gridTop);
     }
 
     function onWheel() {
