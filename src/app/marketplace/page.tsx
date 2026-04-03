@@ -265,106 +265,85 @@ export default function MarketplacePage() {
   const [planApp, setPlanApp] = useState<ConsumerApp | null>(null);
   const [checkoutItem, setCheckoutItem] = useState<{ appName: string; plan: "basic" | "custom"; totalPrice: number; deposit: number; tailPayment: number } | null>(null);
   const [boughtName, setBoughtName] = useState<string | null>(null);
+  const [inGrid, setInGrid] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const slideRef = useRef<HTMLDivElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // Fullpage scroll: hero zone wheel/touch are fully intercepted.
-  // Any scroll gesture while in hero → jump to grid. Scrolling up in grid top → back to hero.
-  // During animation all scroll input is blocked (no interruption).
+  // CSS transform-based fullpage transition — runs on GPU compositor, zero jank.
+  // Hero view: container overflow:hidden, inner div slides via CSS transition.
+  // Grid view: container overflow:auto, native scroll.
   useEffect(() => {
-    const el = containerRef.current;
-    const grid = gridSectionRef.current;
-    if (!el || !grid) return;
-    const container = el;
-    const gridEl = grid;
-    let rafId: number | null = null;
-    let isAnimating = false;
+    const container = containerRef.current;
+    const slide = slideRef.current;
+    if (!container || !slide) return;
 
-    function animateTo(target: number, done?: () => void) {
-      if (rafId) cancelAnimationFrame(rafId);
-      const start = container.scrollTop;
-      const dist = target - start;
-      if (Math.abs(dist) < 2) { isAnimating = false; done?.(); return; }
-      const duration = 550; // smooth, not too fast not too slow
-      const t0 = performance.now();
+    const box = container; // non-null aliases for closures
+    const el = slide;
+    const DURATION = 480; // ms — CSS transition duration
+    let isAnimating = false;
+    let touchStartY = 0;
+
+    function goToGrid() {
+      if (isAnimating) return;
       isAnimating = true;
-      function step(now: number) {
-        const p = Math.min((now - t0) / duration, 1);
-        // easeInOutQuart — feels like native iOS page scroll
-        const ease = p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2;
-        container.scrollTop = start + dist * ease;
-        if (p < 1) {
-          rafId = requestAnimationFrame(step);
-        } else {
-          container.scrollTop = target;
-          isAnimating = false;
-          rafId = null;
-          done?.();
-        }
-      }
-      rafId = requestAnimationFrame(step);
+      el.style.transition = `transform ${DURATION}ms cubic-bezier(0.76, 0, 0.24, 1)`;
+      el.style.transform = "translateY(-100vh)";
+      setTimeout(() => {
+        box.style.overflowY = "auto";
+        box.scrollTop = box.clientHeight;
+        el.style.transition = "none";
+        el.style.transform = "";
+        setInGrid(true);
+        isAnimating = false;
+      }, DURATION);
     }
 
-    function getGridTop() { return gridEl.offsetTop; }
+    function goToHero() {
+      if (isAnimating) return;
+      isAnimating = true;
+      box.style.overflowY = "hidden";
+      box.scrollTop = 0;
+      el.style.transition = "none";
+      el.style.transform = "translateY(-100vh)";
+      void el.offsetHeight; // force reflow
+      el.style.transition = `transform ${DURATION}ms cubic-bezier(0.76, 0, 0.24, 1)`;
+      el.style.transform = "translateY(0)";
+      setTimeout(() => {
+        setInGrid(false);
+        isAnimating = false;
+      }, DURATION);
+    }
 
-    // Wheel handler — fully intercept in hero zone
     function onWheel(e: WheelEvent) {
-      const st = container.scrollTop;
-      const gridTop = getGridTop();
-
-      // In grid area: allow native scroll, but intercept upward at very top of grid
-      if (st >= gridTop) {
-        if (e.deltaY < 0 && st <= gridTop + 5) {
+      if (inGrid) {
+        // Back to hero if scrolling up at very top
+        if (e.deltaY < 0 && box.scrollTop <= box.clientHeight + 4) {
           e.preventDefault();
-          if (!isAnimating) animateTo(0);
+          goToHero();
         }
         return;
       }
-
-      // In hero zone: block all native scroll, we handle it
       e.preventDefault();
       if (isAnimating) return;
-
-      if (e.deltaY > 0) {
-        // scroll down → go to grid
-        animateTo(gridTop);
-      } else {
-        // scroll up → go to top
-        animateTo(0);
-      }
+      if (e.deltaY > 0) goToGrid();
     }
 
-    // Touch handler
-    let touchStartY = 0;
-    let touchStartST = 0;
     function onTouchStart(e: TouchEvent) {
       touchStartY = e.touches[0].clientY;
-      touchStartST = container.scrollTop;
     }
     function onTouchMove(e: TouchEvent) {
-      // Block native scroll in hero zone during animation
-      if (container.scrollTop < getGridTop() || isAnimating) {
-        e.preventDefault();
-      }
+      if (!inGrid || isAnimating) e.preventDefault();
     }
     function onTouchEnd(e: TouchEvent) {
       const dy = touchStartY - e.changedTouches[0].clientY;
-      const st = touchStartST;
-      const gridTop = getGridTop();
-      if (isAnimating) return;
-
-      if (st >= gridTop) {
-        // In grid: only intercept swipe-up from very top
-        if (dy < -40 && container.scrollTop <= gridTop + 5) {
-          animateTo(0);
-        }
-        return;
+      if (isAnimating || Math.abs(dy) < 30) return;
+      if (!inGrid) {
+        if (dy > 0) goToGrid();
+      } else {
+        if (dy < 0 && box.scrollTop <= box.clientHeight + 4) goToHero();
       }
-
-      // In hero: any meaningful swipe triggers transition
-      if (Math.abs(dy) < 30) return;
-      animateTo(dy > 0 ? gridTop : 0);
     }
 
     container.addEventListener("wheel", onWheel, { passive: false });
@@ -376,9 +355,8 @@ export default function MarketplacePage() {
       container.removeEventListener("touchstart", onTouchStart);
       container.removeEventListener("touchmove", onTouchMove);
       container.removeEventListener("touchend", onTouchEnd);
-      if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [inGrid]);
 
   const filtered = consumerApps.filter((a) => {
     const matchCat = activeCategory === "all" || a.category === activeCategory;
@@ -410,7 +388,7 @@ export default function MarketplacePage() {
 
 
   return (
-    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "auto" }}>
+    <div ref={containerRef} className="relative bg-[#f8f9fa]" style={{ height: "100vh", overflowY: "hidden" }}>
       {/* Background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-[400px] w-[900px] rounded-full bg-[#1D9E75]/[0.06] blur-[120px]" />
@@ -435,6 +413,7 @@ export default function MarketplacePage() {
         </div>
       )}
 
+      <div ref={slideRef} style={{ willChange: "transform" }}>
       <main>
         {/* ══════════════════════════════
             HERO — unified background, two cards
@@ -590,8 +569,8 @@ export default function MarketplacePage() {
         </section>
 
       </main>
-
       <Footer />
+      </div>
     </div>
   );
 }
