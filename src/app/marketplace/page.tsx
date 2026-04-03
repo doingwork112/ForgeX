@@ -267,79 +267,56 @@ export default function MarketplacePage() {
   const [boughtName, setBoughtName] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
-  const hiwRef = useRef<HTMLElement>(null);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  // Snap on wheel-end / touchend — fires only when user actually lifts off,
-  // not mid-scroll. Uses a fast rAF animation instead of slow browser smooth.
+  // Snap hero section to top when user stops scrolling before reaching the grid
   useEffect(() => {
     const el = containerRef.current;
-    const hiw = hiwRef.current;
     const grid = gridSectionRef.current;
-    if (!el || !hiw || !grid) return;
-
+    if (!el || !grid) return;
     const container = el;
-    const hiwEl = hiw;
     const gridEl = grid;
     let wheelTimer: ReturnType<typeof setTimeout> | null = null;
     let rafId: number | null = null;
     let isSnapping = false;
 
-    // Fast eased scroll animation (~220ms)
     function animateTo(target: number) {
       if (rafId) cancelAnimationFrame(rafId);
       const start = container.scrollTop;
       const dist = target - start;
       if (Math.abs(dist) < 4) return;
-      const duration = 220;
-      const startTime = performance.now();
+      const duration = 200;
+      const t0 = performance.now();
       isSnapping = true;
-
       function step(now: number) {
-        const t = Math.min((now - startTime) / duration, 1);
-        // easeInOut cubic
+        const t = Math.min((now - t0) / duration, 1);
         const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         container.scrollTop = start + dist * ease;
-        if (t < 1) {
-          rafId = requestAnimationFrame(step);
-        } else {
-          container.scrollTop = target;
-          isSnapping = false;
-          rafId = null;
-        }
+        if (t < 1) { rafId = requestAnimationFrame(step); }
+        else { container.scrollTop = target; isSnapping = false; rafId = null; }
       }
       rafId = requestAnimationFrame(step);
     }
 
-    function snapToNearest() {
+    function snapIfNeeded() {
       if (isSnapping) return;
       const st = container.scrollTop;
       const gridTop = gridEl.offsetTop;
-      if (st >= gridTop - window.innerHeight * 0.4) return; // in grid zone
-
-      const hiwTop = hiwEl.offsetTop;
-      // Snap to whichever section the user is closer to
-      const nearest = Math.abs(st) < Math.abs(st - hiwTop) ? 0 : hiwTop;
-      if (Math.abs(st - nearest) < 4) return;
-      animateTo(nearest);
+      // Only snap if user is in hero zone (before grid)
+      if (st >= gridTop - window.innerHeight * 0.5) return;
+      // Snap to top if partially scrolled
+      if (st > 20) animateTo(0);
     }
 
-    // Wheel: snap shortly after wheel events stop
     function onWheel() {
       if (wheelTimer) clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(snapToNearest, 80);
+      wheelTimer = setTimeout(snapIfNeeded, 80);
     }
-
-    // Touch: snap immediately when finger lifts
-    let touchStartY = 0;
-    function onTouchStart(e: TouchEvent) {
-      touchStartY = e.touches[0].clientY;
-    }
+    let ty = 0;
+    function onTouchStart(e: TouchEvent) { ty = e.touches[0].clientY; }
     function onTouchEnd(e: TouchEvent) {
-      const dy = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(dy) < 10) return; // not a real swipe
-      setTimeout(snapToNearest, 30);
+      if (Math.abs(ty - e.changedTouches[0].clientY) < 10) return;
+      setTimeout(snapIfNeeded, 30);
     }
 
     container.addEventListener("wheel", onWheel, { passive: true });
@@ -411,98 +388,99 @@ export default function MarketplacePage() {
 
       <main>
         {/* ══════════════════════════════
-            HERO — Full viewport snap section
+            SPLIT HERO — one screen, two audiences
         ══════════════════════════════ */}
-        <section ref={heroRef} className="relative flex flex-col items-center justify-center px-6 text-center" style={{ height: "calc(100vh - 57px)" }}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
-            1,200+ apps sold to happy customers 🎊
+        <section className="relative grid grid-cols-1 md:grid-cols-2" style={{ height: "calc(100vh - 57px)" }}>
+
+          {/* LEFT — For coders / sellers */}
+          <div className="relative flex flex-col items-start justify-center px-10 py-12 bg-[#0d1117] overflow-hidden">
+            {/* subtle grid pattern */}
+            <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[#1D9E75]/20 blur-[80px]" />
+
+            <span className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/30 bg-[#1D9E75]/10 px-3.5 py-1.5 text-xs font-semibold text-[#1D9E75]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
+              For Developers
+            </span>
+
+            <h2 className="relative text-4xl font-black leading-tight text-white md:text-5xl">
+              Build once.<br />
+              <span className="text-[#1D9E75]">Sell forever.</span>
+            </h2>
+
+            <p className="relative mt-4 max-w-sm text-base text-white/50 leading-relaxed">
+              List your app, reach thousands of non-technical buyers. You code — we handle sales, escrow, and delivery.
+            </p>
+
+            <div className="relative mt-8 flex flex-col gap-3">
+              <div className="flex items-center gap-2.5 text-sm text-white/60">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#1D9E75]/20 text-[#1D9E75] text-xs">✓</span>
+                Zero upfront cost — list for free
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-white/60">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#1D9E75]/20 text-[#1D9E75] text-xs">✓</span>
+                Escrow protects both sides
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-white/60">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#1D9E75]/20 text-[#1D9E75] text-xs">✓</span>
+                Avg. $800 per sale
+              </div>
+            </div>
+
+            <a href="/sell/new" className="relative mt-8 inline-flex items-center gap-2 rounded-2xl bg-[#1D9E75] px-6 py-3.5 text-sm font-bold text-white hover:bg-[#1D9E75]/90 transition-colors shadow-[0_4px_20px_rgba(29,158,117,0.35)]">
+              Start Selling →
+            </a>
           </div>
 
-          <h1 className="mx-auto max-w-3xl text-4xl font-black leading-tight tracking-tight text-[#111] md:text-5xl">
-            Don&apos;t Code? Buy Ready-Made Apps!
-            <br />
-            <span className="text-[#1D9E75]">Try Free, Pay Only If You Love It ✨</span>
-          </h1>
+          {/* RIGHT — For buyers / startups */}
+          <div className="relative flex flex-col items-start justify-center px-10 py-12 bg-white overflow-hidden">
+            <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-[#1D9E75]/8 blur-[80px]" />
 
-          <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground leading-relaxed">
-            Every app has a free PWA demo · Try for 3-7 days · Pay balance when satisfied · Deposit refund if not
-          </p>
+            <span className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-[#f0fdf8] px-3.5 py-1.5 text-xs font-semibold text-[#1D9E75]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#1D9E75] animate-pulse" />
+              For Startups &amp; Founders
+            </span>
 
-          {/* Benefit pills */}
-          <div className="mt-5 flex flex-wrap justify-center gap-2">
-            {[
-              { icon: "🎮", text: "Try Free PWA Demo" },
-              { icon: "🔒", text: "Deposit Held in Escrow" },
-              { icon: "↩️", text: "Money-Back Guarantee" },
-              { icon: "⚡", text: "Customization in 24h" },
-            ].map(({ icon, text }) => (
-              <span key={text} className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3.5 py-1.5 text-xs font-medium text-[#333] shadow-sm">
-                {icon} {text}
-              </span>
-            ))}
+            <h2 className="relative text-4xl font-black leading-tight text-[#111] md:text-5xl">
+              Ship your app.<br />
+              <span className="text-[#1D9E75]">No engineers needed.</span>
+            </h2>
+
+            <p className="relative mt-4 max-w-sm text-base text-gray-500 leading-relaxed">
+              Browse ready-made apps, try the demo free, pay a small deposit. Your branded app delivered in 24 hours.
+            </p>
+
+            <div className="relative mt-8 flex flex-col gap-3">
+              <div className="flex items-center gap-2.5 text-sm text-gray-500">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f0fdf8] text-[#1D9E75] text-xs">✓</span>
+                Free PWA demo — try before you pay
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-gray-500">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f0fdf8] text-[#1D9E75] text-xs">✓</span>
+                40% deposit, rest after you&apos;re happy
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-gray-500">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f0fdf8] text-[#1D9E75] text-xs">✓</span>
+                Money-back guarantee
+              </div>
+            </div>
+
+            {/* Search bar */}
+            <div className="relative mt-8 w-full max-w-sm">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input ref={searchRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search apps..."
+                className="w-full rounded-2xl border border-black/[0.08] bg-[#f8f9fa] pl-10 pr-4 py-3 text-sm text-[#111] placeholder:text-gray-400 focus:border-[#1D9E75]/50 focus:bg-white focus:outline-none transition-all" />
+            </div>
           </div>
 
-          {/* Search */}
-          <div className="mx-auto mt-7 max-w-xl relative">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input ref={searchRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search: invoicing, booking, fitness, restaurant, campus..."
-              className="w-full rounded-2xl border border-black/[0.08] bg-white pl-12 pr-4 py-3.5 text-sm text-[#111] placeholder:text-muted-foreground shadow-sm focus:border-[#1D9E75]/50 focus:outline-none transition-colors" />
-          </div>
-
-          {/* Scroll down indicator */}
-          <div className="mt-8 flex flex-col items-center gap-1 animate-bounce text-gray-400">
-            <span className="text-xs font-medium">Scroll</span>
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          {/* Scroll hint — bottom center */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-gray-400 animate-bounce">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
-          </div>
-        </section>
-
-        {/* ══════════════════════════════
-            HOW IT WORKS — Full viewport snap section
-        ══════════════════════════════ */}
-        <section ref={hiwRef} className="flex items-center justify-center px-4 sm:px-6" style={{ height: "100vh" }}>
-          <div className="w-full max-w-5xl mx-auto">
-            <div className="text-center mb-10">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#1D9E75]/25 bg-white px-4 py-1.5 text-sm font-medium text-[#1D9E75] shadow-sm mb-5">
-                How It Works
-              </span>
-              <h2 className="text-3xl font-black text-[#111] md:text-4xl">Four simple steps to your own app</h2>
-              <p className="text-base text-gray-500 mt-3 max-w-lg mx-auto">No coding, no risk. Try first, pay later.</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
-              {[
-                { icon: "🎮", title: "Try Free PWA", desc: "No signup, no payment required. Open the demo and explore every feature." },
-                { icon: "💰", title: "Pay 40% Deposit", desc: "Only pay when you love it. Deposit held safely in escrow." },
-                { icon: "🛠️", title: "Developer Customizes", desc: "Logo, colors, content — all yours. Delivered within 24 hours." },
-                { icon: "🎉", title: "Review & Pay Balance", desc: "Happy? Pay the rest. Not happy? Get your deposit refunded." },
-              ].map(({ icon, title, desc }, i) => (
-                <div key={title} className="relative flex flex-col items-center text-center gap-4">
-                  {i < 3 && (
-                    <div className="absolute right-0 top-8 hidden h-px w-1/2 translate-x-1/2 border-t-2 border-dashed border-[#1D9E75]/25 sm:block" />
-                  )}
-                  <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1D9E75]/10 text-3xl shadow-sm">
-                    {icon}
-                    <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#1D9E75] text-xs font-black text-white shadow">{i + 1}</span>
-                  </div>
-                  <p className="text-base font-bold text-[#111]">{title}</p>
-                  <p className="text-sm text-gray-500 leading-relaxed max-w-[200px]">{desc}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Scroll hint */}
-            <div className="mt-10 flex flex-col items-center gap-1 animate-bounce text-gray-400">
-              <span className="text-xs font-medium">Browse Apps</span>
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
           </div>
         </section>
 
