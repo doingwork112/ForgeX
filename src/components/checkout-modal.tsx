@@ -191,7 +191,8 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
     } catch {
       setFetchError("Network error, please refresh and try again");
     }
-  }, [item.deposit, item.appName, item.plan]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.deposit, item.appName, item.plan, item.appId, item.buyerId, item.sellerId, item.sellerStripeAccountId, item.tailPayment, item.totalPrice]);
 
   useEffect(() => {
     fetchIntent();

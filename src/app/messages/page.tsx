@@ -37,6 +37,7 @@ export default function MessagesPage() {
     if (!loading && !user) router.replace("/auth/login");
   }, [user, loading, router]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!user) return;
     loadConversations();

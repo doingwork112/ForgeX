@@ -237,6 +237,7 @@ export default function CommunityPage() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchPosts(); }, [user]);
 
   async function handleVote(postId: string, value: 1 | -1) {
