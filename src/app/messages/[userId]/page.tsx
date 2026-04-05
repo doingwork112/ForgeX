@@ -46,7 +46,6 @@ export default function ConversationPage({ params }: { params: { userId: string 
     if (!loading && !user) router.replace("/auth/login");
   }, [user, loading, router]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!user) return;
     loadData();
@@ -76,6 +75,7 @@ export default function ConversationPage({ params }: { params: { userId: string 
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, params.userId]);
 
   useEffect(() => {
