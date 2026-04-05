@@ -494,6 +494,18 @@ export default function MarketplacePage() {
             MAIN: SIDEBAR + GRID — free scroll after snap disabled
         ══════════════════════════════ */}
         <section ref={gridSectionRef} className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 pt-16">
+          {/* Mobile categories — outside the flex row */}
+          <div className="lg:hidden mb-4">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+              {consumerCategories.map((cat) => (
+                <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
+                  className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition-all ${activeCategory === cat.id ? "border-[#1D9E75] bg-[#1D9E75] text-white shadow-[0_2px_8px_rgba(29,158,117,0.25)]" : "border-black/[0.08] bg-white text-muted-foreground hover:text-[#111]"}`}>
+                  <span>{cat.icon}</span>{cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="flex gap-7">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-52 shrink-0">
@@ -513,18 +525,6 @@ export default function MarketplacePage() {
                 ))}
               </div>
             </aside>
-
-            {/* Mobile categories */}
-            <div className="lg:hidden w-full -mt-4 mb-2">
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                {consumerCategories.map((cat) => (
-                  <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-                    className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition-all ${activeCategory === cat.id ? "border-[#1D9E75] bg-[#1D9E75] text-white shadow-[0_2px_8px_rgba(29,158,117,0.25)]" : "border-black/[0.08] bg-white text-muted-foreground hover:text-[#111]"}`}>
-                    <span>{cat.icon}</span>{cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Product grid */}
             <div className="flex-1 min-w-0">
