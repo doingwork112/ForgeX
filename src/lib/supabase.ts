@@ -1,13 +1,17 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
-  cookieOptions: {
-    maxAge: 60 * 60 * 24 * 400, // 400 days — persist across browser restarts
-    sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+// Use supabase-js directly — stores session in localStorage which persists
+// across browser restarts (unlike session cookies which disappear on close).
+// All pages in this app are "use client" so SSR auth is not needed.
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    storageKey: "forgex-auth",
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
   },
 });
 
