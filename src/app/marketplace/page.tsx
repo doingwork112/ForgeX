@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
-  consumerApps,
+  consumerApps as mockApps,
   consumerCategories,
   type ConsumerApp,
 } from "@/lib/mock-data";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CheckoutModal } from "@/components/checkout-modal";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth";
 
 /* ─── helpers ─── */
 function StarRating({ rating }: { rating: number }) {
@@ -258,26 +260,104 @@ function AppCard({ app, onTry, onBuy }: { app: ConsumerApp; onTry: () => void; o
 /* ═══════════════════════════════════════════
    PAGE
 ═══════════════════════════════════════════ */
+// ─── Supabase app → ConsumerApp mapper ───────────────────────────────────
+interface SupabaseAppRow {
+  id: string;
+  seller_id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  category: string;
+  tags: string[];
+  price_basic: number;
+  price_custom: number | null;
+  deposit: number;
+  pwa_demo_url: string | null;
+  demo_url: string | null;
+  rating: number;
+  sold: number;
+  status: string;
+  profiles: { username: string; display_name: string | null; avatar_url: string | null; stripe_account_id: string | null } | null;
+}
+
+function mapDbApp(a: SupabaseAppRow): ConsumerApp & { _sellerId: string; _sellerStripeAccountId?: string } {
+  return {
+    id: a.id,
+    name: a.name,
+    tagline: a.tagline,
+    description: a.description,
+    tags: a.tags ?? [],
+    category: a.category,
+    priceBasic: a.price_basic,
+    priceCustom: a.price_custom ?? undefined,
+    deposit: a.deposit,
+    demoUrl: a.demo_url ?? a.pwa_demo_url ?? "",
+    pwaDemoUrl: a.pwa_demo_url ?? a.demo_url ?? "",
+    rating: a.rating ?? 0,
+    sold: a.sold ?? 0,
+    sellerName: a.profiles?.display_name ?? a.profiles?.username ?? "Unknown",
+    sellerAvatar: (a.profiles?.username ?? "FX").slice(0, 2).toUpperCase(),
+    sellerUsername: a.profiles?.username ?? "unknown",
+    _sellerId: a.seller_id,
+    _sellerStripeAccountId: a.profiles?.stripe_account_id ?? undefined,
+  };
+}
+
+// Extend ConsumerApp to carry seller/app IDs for checkout
+type AppWithMeta = ConsumerApp & { _sellerId?: string; _sellerStripeAccountId?: string };
+
 export default function MarketplacePage() {
+  const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
-  const [demoApp, setDemoApp] = useState<ConsumerApp | null>(null);
-  const [planApp, setPlanApp] = useState<ConsumerApp | null>(null);
-  const [checkoutItem, setCheckoutItem] = useState<{ appName: string; plan: "basic" | "custom"; totalPrice: number; deposit: number; tailPayment: number } | null>(null);
+  const [demoApp, setDemoApp] = useState<AppWithMeta | null>(null);
+  const [planApp, setPlanApp] = useState<AppWithMeta | null>(null);
+  const [checkoutItem, setCheckoutItem] = useState<{
+    appId?: string; sellerId?: string; sellerStripeAccountId?: string; buyerId?: string;
+    appName: string; plan: "basic" | "custom";
+    totalPrice: number; deposit: number; tailPayment: number;
+  } | null>(null);
   const [boughtName, setBoughtName] = useState<string | null>(null);
+  const [apps, setApps] = useState<AppWithMeta[]>(mockApps);
+  const [appsLoading, setAppsLoading] = useState(true);
   const gridSectionRef = useRef<HTMLElement>(null);
 
-  const filtered = consumerApps.filter((a) => {
+  // Fetch real apps from Supabase
+  useEffect(() => {
+    supabase
+      .from("apps")
+      .select("*, profiles(username, display_name, avatar_url, stripe_account_id)")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setApps((data as SupabaseAppRow[]).map(mapDbApp));
+        }
+        // else keep mock apps
+        setAppsLoading(false);
+      });
+  }, []);
+
+  const filtered = apps.filter((a) => {
     const matchCat = activeCategory === "all" || a.category === activeCategory;
     const q = search.toLowerCase();
-    const matchSearch = !q || a.name.includes(q) || a.tagline.includes(q) || a.tags.some((t) => t.includes(q));
+    const matchSearch =
+      !q ||
+      a.name.toLowerCase().includes(q) ||
+      a.tagline.toLowerCase().includes(q) ||
+      a.tags.some((t) => t.toLowerCase().includes(q));
     return matchCat && matchSearch;
   });
 
   function handlePlanConfirm(plan: "basic" | "custom") {
     if (!planApp) return;
     const totalPrice = plan === "basic" ? planApp.priceBasic : (planApp.priceCustom ?? planApp.priceBasic);
+    const isUUID = /^[0-9a-f-]{36}$/.test(planApp.id);
     setCheckoutItem({
+      appId: isUUID ? planApp.id : undefined,
+      sellerId: isUUID ? (planApp as AppWithMeta)._sellerId : undefined,
+      sellerStripeAccountId: (planApp as AppWithMeta)._sellerStripeAccountId,
+      buyerId: user?.id,
       appName: planApp.name,
       plan,
       totalPrice,
@@ -287,11 +367,28 @@ export default function MarketplacePage() {
     setPlanApp(null);
   }
 
-  function handleCheckoutSuccess(paymentIntentId: string) {
-    const name = checkoutItem?.appName ?? "";
+  async function handleCheckoutSuccess(paymentIntentId: string) {
+    const item = checkoutItem;
+    const name = item?.appName ?? "";
     setCheckoutItem(null);
     setBoughtName(name);
-    console.log("Payment intent:", paymentIntentId);
+
+    // Client-side order creation (immediate, doesn't wait for webhook)
+    if (item?.appId && item?.sellerId && item?.buyerId) {
+      await supabase.from("orders").upsert({
+        id: paymentIntentId,
+        app_id: item.appId,
+        buyer_id: item.buyerId,
+        seller_id: item.sellerId,
+        plan: item.plan,
+        total_price: item.totalPrice,
+        deposit_paid: item.deposit,
+        tail_payment: item.tailPayment,
+        status: "deposit_paid" as const,
+        payment_intent_id: paymentIntentId,
+      });
+    }
+
     setTimeout(() => setBoughtName(null), 5000);
   }
 
@@ -431,19 +528,53 @@ export default function MarketplacePage() {
 
             {/* Product grid */}
             <div className="flex-1 min-w-0">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-bold text-[#111]">{filtered.length}</span> apps
-                  {activeCategory !== "all" && <span className="ml-1 text-[#1D9E75]">· {consumerCategories.find(c => c.id === activeCategory)?.label}</span>}
+              {/* Search + count bar */}
+              <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative flex-1 max-w-sm">
+                  <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search apps..."
+                    className="w-full rounded-full border border-black/[0.1] bg-white py-2.5 pl-10 pr-4 text-sm text-[#111] placeholder:text-gray-400 focus:border-[#1D9E75]/50 focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/10 transition-all"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch("")} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground shrink-0">
+                  {appsLoading ? (
+                    <span className="inline-block h-4 w-16 animate-pulse rounded bg-black/[0.06]" />
+                  ) : (
+                    <>
+                      <span className="font-bold text-[#111]">{filtered.length}</span> apps
+                      {activeCategory !== "all" && <span className="ml-1 text-[#1D9E75]">· {consumerCategories.find(c => c.id === activeCategory)?.label}</span>}
+                    </>
+                  )}
                 </p>
-                {search && (
-                  <button onClick={() => setSearch("")} className="text-xs text-muted-foreground hover:text-[#111] transition-colors">
-                    Clear ✕
-                  </button>
-                )}
               </div>
 
-              {filtered.length === 0 ? (
+              {appsLoading ? (
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {[1,2,3,4,5,6].map(i => (
+                    <div key={i} className="rounded-3xl border border-black/[0.06] bg-white overflow-hidden animate-pulse">
+                      <div className="aspect-[16/9] bg-black/[0.04]" />
+                      <div className="p-5 space-y-3">
+                        <div className="h-4 w-2/3 rounded bg-black/[0.06]" />
+                        <div className="h-3 w-full rounded bg-black/[0.04]" />
+                        <div className="h-3 w-4/5 rounded bg-black/[0.04]" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-3xl border border-black/[0.06] bg-white text-center px-8">
                   <span className="text-5xl">🤔</span>
                   <p className="text-sm font-semibold text-[#111]">Can&apos;t find what you need?</p>

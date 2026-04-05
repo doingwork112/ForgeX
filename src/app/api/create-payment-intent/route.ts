@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-// Initialise Stripe — reads STRIPE_SECRET_KEY from env
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 
 export async function POST(req: NextRequest) {
@@ -16,10 +15,27 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { amount, appName, plan, currency = "usd" } = body as {
-      amount: number;   // amount in cents, e.g. 2000 = $20
+    const {
+      amount,
+      appName,
+      appId = "",
+      buyerId = "",
+      sellerId = "",
+      sellerStripeAccountId = "",
+      plan,
+      totalPrice,
+      tailPayment,
+      currency = "usd",
+    } = body as {
+      amount: number;
       appName: string;
+      appId?: string;
+      buyerId?: string;
+      sellerId?: string;
+      sellerStripeAccountId?: string;
       plan: "basic" | "custom";
+      totalPrice?: number;
+      tailPayment?: number;
       currency?: string;
     };
 
@@ -27,19 +43,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    // Create a PaymentIntent for the deposit amount
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,                     // in cents
-      currency,                   // "usd"
+    // 10% platform fee
+    const platformFee = Math.round(amount * 0.10);
+
+    const intentParams: Stripe.PaymentIntentCreateParams = {
+      amount,
+      currency,
       automatic_payment_methods: { enabled: true },
       metadata: {
         appName,
+        appId,
+        buyerId,
+        sellerId,
         plan,
-        type: "deposit",          // 40% deposit
+        totalPrice: String(totalPrice ?? ""),
+        tailPayment: String(tailPayment ?? ""),
+        type: "deposit",
         platform: "ForgeX",
+        platformFee: String(platformFee),
       },
       description: `ForgeX Deposit — ${appName} (${plan === "basic" ? "Standard" : "Custom"})`,
-    });
+    };
+
+    // Auto-split only when seller has connected Stripe
+    if (sellerStripeAccountId) {
+      intentParams.application_fee_amount = platformFee;
+      intentParams.transfer_data = { destination: sellerStripeAccountId };
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(intentParams);
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err: unknown) {

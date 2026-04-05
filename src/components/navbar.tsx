@@ -85,6 +85,15 @@ export function Navbar() {
           {!loading && (
             user ? (
               <>
+                {/* Messages icon */}
+                <Link href="/messages" className="hidden md:block">
+                  <button className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors" title="Messages">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </button>
+                </Link>
+
                 {/* Dashboard icon */}
                 <Link href="/dashboard" className="hidden md:block">
                   <button className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-[#111] hover:bg-black/[0.04] transition-colors" title="Dashboard">
@@ -117,6 +126,7 @@ export function Navbar() {
                           { href: `/u/${profile?.username}`, icon: "👤", label: "My Profile" },
                           { href: "/dashboard", icon: "📊", label: "Dashboard" },
                           { href: "/dashboard/orders", icon: "📦", label: "Orders" },
+                          { href: "/messages", icon: "💬", label: "Messages" },
                           { href: "/sell/new", icon: "➕", label: "List an App" },
                         ].filter(({ href }) => !href.includes("undefined")).map(({ href, icon, label }) => (
                           <Link key={href} href={href} onClick={() => setAvatarOpen(false)}

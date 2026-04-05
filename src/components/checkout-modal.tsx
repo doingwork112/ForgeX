@@ -21,6 +21,10 @@ function getStripe() {
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface CheckoutItem {
+  appId?: string;                  // Supabase app UUID (empty for mock apps)
+  sellerId?: string;               // Supabase seller UUID
+  sellerStripeAccountId?: string;  // Stripe Connect account ID for auto-split
+  buyerId?: string;                // Supabase buyer UUID (filled by parent)
   appName: string;
   plan: "basic" | "custom";
   totalPrice: number;   // $ total
@@ -165,9 +169,15 @@ export function CheckoutModal({ item, onClose, onSuccess }: CheckoutModalProps) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: item.deposit * 100,          // $ → cents
+          amount: item.deposit * 100,
           appName: item.appName,
+          appId: item.appId ?? "",
+          buyerId: item.buyerId ?? "",
+          sellerId: item.sellerId ?? "",
+          sellerStripeAccountId: item.sellerStripeAccountId ?? "",
           plan: item.plan,
+          totalPrice: item.totalPrice,
+          tailPayment: item.tailPayment,
           currency: "usd",
         }),
       });

@@ -3,7 +3,13 @@ import { createBrowserClient } from "@supabase/ssr";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  cookieOptions: {
+    maxAge: 60 * 60 * 24 * 400, // 400 days — persist across browser restarts
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+  },
+});
 
 export type Database = {
   public: {
@@ -19,6 +25,7 @@ export type Database = {
           banner_color: string | null;
           role: "creator" | "buyer" | "both";
           currently_building: string | null;
+          stripe_account_id: string | null;
           website: string | null;
           twitter: string | null;
           created_at: string;
@@ -100,10 +107,36 @@ export type Database = {
           author_id: string;
           content: string;
           parent_id: string | null;
+          repost_of: string | null;
+          image_url: string | null;
+          tag: string | null;
           created_at: string;
         };
         Insert: Omit<Database["public"]["Tables"]["posts"]["Row"], "created_at">;
         Update: Partial<Database["public"]["Tables"]["posts"]["Insert"]>;
+      };
+      votes: {
+        Row: {
+          id: string;
+          user_id: string;
+          post_id: string;
+          value: 1 | -1;
+          created_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["votes"]["Row"], "created_at">;
+        Update: Partial<Database["public"]["Tables"]["votes"]["Insert"]>;
+      };
+      messages: {
+        Row: {
+          id: string;
+          from_id: string;
+          to_id: string;
+          content: string;
+          read: boolean;
+          created_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["messages"]["Row"], "created_at">;
+        Update: Partial<Database["public"]["Tables"]["messages"]["Insert"]>;
       };
       follows: {
         Row: {

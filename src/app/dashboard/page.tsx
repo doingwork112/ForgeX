@@ -1,10 +1,13 @@
 "use client";
 
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { apps, mockOrders } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/lib/auth";
 
 // Generate 14 days of mock sales data
 function generateSalesData() {
@@ -57,6 +60,86 @@ const recentOrders = [...mockOrders]
 
 const sellerApp = apps.find((a) => a.id === "1");
 
+function StripeConnectBanner() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const [status, setStatus] = useState<"loading" | "connected" | "pending" | "disconnected">("loading");
+  const [connecting, setConnecting] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/stripe/connect/status")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.connected) setStatus("connected");
+        else if (d.pending) setStatus("pending");
+        else setStatus("disconnected");
+      })
+      .catch(() => setStatus("disconnected"));
+  }, [user, searchParams]);
+
+  async function handleConnect() {
+    setConnecting(true);
+    try {
+      const res = await fetch("/api/stripe/connect", { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error ?? "Failed to start Stripe onboarding");
+    } catch {
+      alert("Network error, please try again");
+    }
+    setConnecting(false);
+  }
+
+  if (status === "loading") return null;
+
+  if (status === "connected") {
+    return (
+      <div className="mb-6 flex items-center gap-3 rounded-2xl border border-[#1D9E75]/20 bg-[#1D9E75]/5 px-5 py-3.5">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1D9E75]/15 text-[#1D9E75]">✓</span>
+        <div>
+          <p className="text-sm font-semibold text-[#111]">Stripe Connected</p>
+          <p className="text-xs text-muted-foreground">You receive 90% of every sale automatically</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "pending") {
+    return (
+      <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3.5">
+        <div className="flex items-center gap-3">
+          <span className="text-xl">⏳</span>
+          <div>
+            <p className="text-sm font-semibold text-amber-800">Stripe Setup Incomplete</p>
+            <p className="text-xs text-amber-700">Finish setting up your account to receive payments</p>
+          </div>
+        </div>
+        <button onClick={handleConnect} disabled={connecting}
+          className="shrink-0 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-50 transition-colors">
+          {connecting ? "Loading..." : "Complete Setup →"}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-orange-50 px-5 py-3.5">
+      <div className="flex items-center gap-3">
+        <span className="text-xl">💳</span>
+        <div>
+          <p className="text-sm font-semibold text-orange-800">Connect Stripe to Receive Payments</p>
+          <p className="text-xs text-orange-700">You&apos;ll get 90% of every sale deposited directly to your bank. ForgeX keeps 10%.</p>
+        </div>
+      </div>
+      <button onClick={handleConnect} disabled={connecting}
+        className="shrink-0 rounded-xl bg-[#1D9E75] px-4 py-2 text-xs font-bold text-white hover:bg-[#178c66] disabled:opacity-50 transition-colors">
+        {connecting ? "Loading..." : "Connect Stripe →"}
+      </button>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   return (
     <div className="relative min-h-screen bg-[#f8f9fa] text-[#111]">
@@ -74,6 +157,11 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-6 py-12">
+        {/* Stripe Connect Banner */}
+        <Suspense fallback={null}>
+          <StripeConnectBanner />
+        </Suspense>
+
         {/* Header */}
         <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
